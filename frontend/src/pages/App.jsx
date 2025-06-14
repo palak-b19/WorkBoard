@@ -6,7 +6,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow p-4">
-        <h2 className="text-xl">Welcome to Task Manager</h2>
+        <h2 className="text-xl">Hello to Task Manager</h2>
       </main>
       <Footer />
     </div>
