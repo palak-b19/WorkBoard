@@ -1,0 +1,17 @@
+{
+  "name": "task-management-platform",
+  "version": "1.0.0",
+  "description": "Task Management MVP",
+  "main": "backend/index.js",
+  "scripts": {
+    "start": "cd backend && npm install && npm start",
+    "heroku-postbuild": "cd backend && npm install"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
