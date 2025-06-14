@@ -1,12 +1,12 @@
 name: Backend CI
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/* ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  lint-and-deploy:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,13 +21,5 @@ jobs:
         
       - name: Run Prettier
         run: cd backend && npx prettier --check .
-        
-      # Only deploy on main branch pushes (not PRs)
-      - name: Deploy to Heroku
-        if: github.ref == 'refs/heads/main'
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "task-management-platform"  # Replace with your actual app name
-          heroku_email: ${{ secrets.MY_EMAIL}}   # Replace with your email
-          appdir: "backend"
+
+# Deployment happens automatically via Heroku GitHub integration
