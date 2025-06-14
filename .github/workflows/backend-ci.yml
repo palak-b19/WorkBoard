@@ -22,6 +22,6 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: task-mvp-backend
-          heroku_email: <your-email>
+          heroku_app_name: task-management-platform
+          heroku_email: ${{secrets.MY_EMAIL}}
           appdir: backend
