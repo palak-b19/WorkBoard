@@ -8,7 +8,9 @@ export default function App() {
       <Header />
       <main className="flex-grow p-4">
         <h2 className="text-xl">Welcome to Task Manager</h2>
-        <Link to="/login" className="text-blue-500">Go to Login</Link>
+        <Link to="/login" className="text-blue-500">
+          Go to Login
+        </Link>
       </main>
       <Footer />
     </div>
