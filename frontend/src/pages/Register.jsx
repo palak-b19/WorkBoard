@@ -3,16 +3,15 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitted, setSubmitted] = useState(false); // Track if form has been submitted
 
   const handleSubmit = (e) => {
-    console.log('Starting');
     e.preventDefault();
     setSubmitted(true); // Mark form as submitted for error styling
-    console.log('Login:', { email, password }); // Placeholder for API call
+    console.log('Register:', { email, password }); // Placeholder for API call
   };
 
   return (
@@ -20,7 +19,7 @@ export default function Login() {
       <Header />
       <main className="flex-grow flex items-center justify-center bg-gray-100">
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 mb-2" htmlFor="email">
@@ -56,13 +55,13 @@ export default function Login() {
               type="submit"
               className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
             >
-              Login
+              Register
             </button>
           </form>
           <p className="mt-4 text-center">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-500 hover:underline">
-              Register
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-500 hover:underline">
+              Login
             </Link>
           </p>
         </div>
