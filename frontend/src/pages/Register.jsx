@@ -1,17 +1,25 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { register } from '../services/api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [submitted, setSubmitted] = useState(false); // Track if form has been submitted
+  const [error, setError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true); // Mark form as submitted for error styling
-    console.log('Register:', { email, password }); // Placeholder for API call
+    setSubmitted(true);
+    try {
+      const response = await register(email, password);
+      console.log('Register response:', response.data);
+    } catch (err) {
+      setError('Registration failed. Please try again.');
+      console.error(err);
+    }
   };
 
   return (
@@ -20,6 +28,7 @@ export default function Register() {
       <main className="flex-grow flex items-center justify-center bg-gray-100">
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
           <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 mb-2" htmlFor="email">
