@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
@@ -5,12 +6,7 @@ require('dotenv').config();
 
 console.log('Starting server...');
 
-try {
-  const app = express();
-} catch (error) {
-  console.error('Error initializing the server:', error);
-  process.exit(1);
-}
+const app = express();
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
