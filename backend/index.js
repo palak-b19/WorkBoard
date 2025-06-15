@@ -3,7 +3,15 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 require('dotenv').config();
 
-const app = express();
+console.log('Starting server...');
+
+try {
+  const app = express();
+} catch (error) {
+  console.error('Error initializing the server:', error);
+  process.exit(1);
+}
+
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.get('/health', (req, res) => {
