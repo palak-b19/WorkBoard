@@ -40,7 +40,10 @@ describe('POST /api/auth/register', () => {
   });
 
   it('should reject duplicate email', async () => {
-    await new User({ email: 'test@example.com', password: 'password123' }).save();
+    await new User({
+      email: 'test@example.com',
+      password: 'password123',
+    }).save();
     const res = await request(app)
       .post('/api/auth/register')
       .send({ email: 'test@example.com', password: 'password123' });
@@ -59,7 +62,10 @@ describe('POST /api/auth/register', () => {
 
 describe('POST /api/auth/login', () => {
   it('should login a user with valid credentials', async () => {
-    const user = new User({ email: 'test@example.com', password: 'password123' });
+    const user = new User({
+      email: 'test@example.com',
+      password: 'password123',
+    });
     await user.save();
     const res = await request(app)
       .post('/api/auth/login')
@@ -69,7 +75,10 @@ describe('POST /api/auth/login', () => {
   });
 
   it('should reject invalid credentials', async () => {
-    const user = new User({ email: 'test@example.com', password: 'password123' });
+    const user = new User({
+      email: 'test@example.com',
+      password: 'password123',
+    });
     await user.save();
     const res = await request(app)
       .post('/api/auth/login')
