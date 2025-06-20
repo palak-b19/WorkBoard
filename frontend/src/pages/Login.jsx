@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../services/api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,15 +9,17 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
     try {
       const response = await login(email, password);
-      console.log('Login response:', response.data);
+      localStorage.setItem('token', response.data.token);
+      navigate('/dashboard');
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError('Login failed. Please check your credentials.');
       console.error(err);
     }
   };
