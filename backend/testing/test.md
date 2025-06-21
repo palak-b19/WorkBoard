@@ -1,0 +1,1 @@
+- Check that duplicate project boards are not allowed
