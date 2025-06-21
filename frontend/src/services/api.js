@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://task-management-platform-746079896238.herokuapp.com/api', // Update to Heroku URL later
+  baseURL: 'http://localhost:3000/api', // Update to Heroku URL later
 });
 
 export const register = (email, password) =>
@@ -9,5 +9,14 @@ export const register = (email, password) =>
 
 export const login = (email, password) =>
   api.post('/auth/login', { email, password });
+
+export const createBoard = (title) =>
+  api.post(
+    '/boards',
+    { title },
+    {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    }
+  );
 
 export default api;
