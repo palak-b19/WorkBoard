@@ -20,6 +20,11 @@
   - Headers: Authorization: Bearer <token>
   - Response: 200 [ { _id: string, title: string, createdAt: date } ] or 401/500 { "error": string }
 
+- GET /api/boards/:id
+
+  - Headers: Authorization: Bearer <token>
+  - Response: 200 { board: object } or 401/404/500 { "error": string }
+
   ## Backend Status
 
 - Authentication complete: Register, Login, Validate endpoints with JWT.
