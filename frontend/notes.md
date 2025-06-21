@@ -19,3 +19,8 @@ Login/Register UI tested: navigation, form submission, error handling.
 - Updated `Dashboard.jsx` with link to `/board`.
 - Tested UI: Lists display correctly, empty state shown, protected route enforced.
 - Next: Implement board creation UI and API integration.
+
+- Updated `Dashboard.jsx` with board creation form and board list UI.
+- Integrated form with `createBoard` API, reused `submitted` state for validation.
+- Tested form: Valid/invalid inputs, error handling, board list display.
+- Next: Fetch boards from API, add dynamic board routing (Day 8).
