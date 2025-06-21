@@ -1,13 +1,27 @@
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow p-4">
         <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
         <p>Welcome to your task management dashboard!</p>
+        <button
+          onClick={handleLogout}
+          className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+        >
+          Logout
+        </button>
       </main>
       <Footer />
     </div>
