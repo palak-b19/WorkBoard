@@ -10,4 +10,9 @@ export const register = (email, password) =>
 export const login = (email, password) =>
   api.post('/auth/login', { email, password });
 
+export const createBoard = (title) =>
+  api.post('/boards', { title }, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
+
 export default api;
