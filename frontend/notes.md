@@ -11,3 +11,11 @@ Login/Register UI tested: navigation, form submission, error handling.
 - Logout: Tested from Header and Dashboard, verified token removal and redirect.
 - Navigation: Tested all routes and protected /dashboard.
 - Styling: Verified Tailwind styles and error borders after submission.
+
+## Day 6 Frontend Progress
+
+- Created `Board.jsx` with three static lists (To Do, In Progress, Done) using React-DnD.
+- Added `/board` route, protected by `ProtectedRoute`.
+- Updated `Dashboard.jsx` with link to `/board`.
+- Tested UI: Lists display correctly, empty state shown, protected route enforced.
+- Next: Implement board creation UI and API integration.
