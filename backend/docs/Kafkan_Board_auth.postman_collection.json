@@ -125,6 +125,136 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Success : Board Creation",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1MDg4ODAsImV4cCI6MTc1MDUxMjQ4MH0.GQ5rX1HogTRgXM5dXgjtLEmS7hNktkUCdznrbt5Pi_g",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\" : \"board2\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Success : List of Boards",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1MDg4ODAsImV4cCI6MTc1MDUxMjQ4MH0.GQ5rX1HogTRgXM5dXgjtLEmS7hNktkUCdznrbt5Pi_g",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1MDg4ODAsImV4cCI6MTc1MDUxMjQ4MH0.GQ5rX1HogTRgXM5dXgjtLEmS7hNktkUCdznrbt5Pi_g",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : No Token provided",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Invalid token while fetching list of boards",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "123",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empty Board List for new user",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2YTdkN2M3N2YzN2Q0MWI0MzQxZjUiLCJpYXQiOjE3NTA1MDk1NjksImV4cCI6MTc1MDUxMzE2OX0.l1YZqrS4B4VOXgNUNPFzdvGSGyyQ7rG5n0wUxuCUFY8",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
     }
   ]
 }
