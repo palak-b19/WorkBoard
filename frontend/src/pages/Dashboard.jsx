@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { createBoard } from '../services/api';
+import { createBoard, getBoards } from '../services/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
-  const [boards, setBoards] = useState([]); // Placeholder for board list
+  const [boards, setBoards] = useState([]);
+  const [fetchError, setFetchError] = useState('');
+
+  useEffect(() => {
+    const fetchBoards = async () => {
+      try {
+        const response = await getBoards();
+        setBoards(response.data);
+      } catch (err) {
+        setFetchError('Failed to fetch boards');
+      }
+    };
+    fetchBoards();
+  }, []);
 
   const handleCreateBoard = async (e) => {
     e.preventDefault();
@@ -62,6 +75,9 @@ export default function Dashboard() {
         </form>
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-2">Your Boards</h3>
+          {fetchError && (
+            <p className="text-red-500 text-sm mb-2">{fetchError}</p>
+          )}
           {boards.length === 0 ? (
             <p className="text-gray-500">No boards created yet</p>
           ) : (
@@ -69,7 +85,7 @@ export default function Dashboard() {
               {boards.map((board) => (
                 <li key={board._id}>
                   <Link
-                    to="/board" // Placeholder, will update with dynamic routing
+                    to={`/board/${board._id}`}
                     className="text-blue-500 hover:underline"
                   >
                     {board.title}
