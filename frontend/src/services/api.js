@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // Heroku URL
+  baseURL: 'http://localhost:3000/api', // Localhost for testing
 });
 
 export const register = (email, password) =>
@@ -21,6 +21,11 @@ export const createBoard = (title) =>
 
 export const getBoards = () =>
   api.get('/boards', {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
+
+export const getBoardById = (id) =>
+  api.get(`/boards/${id}`, {
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
   });
 

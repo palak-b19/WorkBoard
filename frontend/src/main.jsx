@@ -32,6 +32,14 @@ createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/board/:id"
+          element={
+            <ProtectedRoute>
+              <Board />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   </StrictMode>
