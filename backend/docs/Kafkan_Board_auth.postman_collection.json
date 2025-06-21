@@ -255,6 +255,106 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Success : Fetch Board by ID",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1MzI1NzUsImV4cCI6MTc1MDUzNjE3NX0.1eMexjYXzL9ugnb3aKs2BGIEUbuzGFokwB7dT5oLHn8",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/boards/6856a5d314a376d4d457708d",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "6856a5d314a376d4d457708d"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Incorrect Board ID",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1MzI3NjksImV4cCI6MTc1MDUzNjM2OX0.49Myog7eGP84e40gCj4uZsrYWDEh-unvGOhrkFEWOck",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/boards/123",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "123"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Incorrect Board ID - No Token Provided",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/boards/123",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "123"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Incorrect Board ID - Invalid Token",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "123",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/boards/123",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "123"]
+        }
+      },
+      "response": []
     }
   ]
 }
