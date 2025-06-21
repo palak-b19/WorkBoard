@@ -29,3 +29,9 @@ Login/Register UI tested: navigation, form submission, error handling.
 - Updated `Board.jsx` to fetch specific board data using `getBoardById` API.
 - Added `/board/:id` route in `main.jsx`.
 - Tested: Board listing, dynamic routing, error/loading states.
+
+-Added drag-and-drop for tasks in `Board.jsx` using React-DnD.
+
+- Created `Task.jsx` and `List.jsx` for draggable tasks and droppable lists.
+- Integrated with `updateBoard` API to persist task positions.
+- Tested: Task movement between lists, error handling.
