@@ -7,5 +7,11 @@
   - Body: { "email": string, "password": string }
   - Response: 200 { "token": string } or 400/401/500 { "error": string }
 - GET /api/auth/validate
+
   - Headers: Authorization: Bearer <token>
   - Response: 200 { "userId": string } or 401 { "error": string }
+
+  ## Backend Status
+
+- Authentication complete: Register, Login, Validate endpoints with JWT.
+- Feature branch `feature/auth-api` merged into `main`.
