@@ -1,0 +1,130 @@
+{
+  "info": {
+    "_postman_id": "6ca1ce89-36e2-4628-8875-e4902f0661e4",
+    "name": "Kafkan_Board_auth",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36688354"
+  },
+  "item": [
+    {
+      "name": "Success : Board Creation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2NmQyODA1NjViMzE1M2I5MGNiNWYiLCJpYXQiOjE3NTA0OTQ1MTAsImV4cCI6MTc1MDQ5ODExMH0.hfmzBJNmUeQ7tvCWHwQeSWFXpqQPKkLxYuZuM6paKTg",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": \"Project Board\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Board Title Required",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2NmQyODA1NjViMzE1M2I5MGNiNWYiLCJpYXQiOjE3NTA0OTQ1MTAsImV4cCI6MTc1MDQ5ODExMH0.hfmzBJNmUeQ7tvCWHwQeSWFXpqQPKkLxYuZuM6paKTg",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : No Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer ",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\": \"Project Board\"  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Invalid Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer cjncj",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\": \"Project Board\"  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
