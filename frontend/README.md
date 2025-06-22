@@ -11,3 +11,5 @@ Run npm run dev to start Vite server at http://localhost:5173
 - Kanban Board: Static UI with lists. Board creation form and list UI added.
 - Authentication complete: Login, Register, Logout, protected routes.
 - Kanban Board: Static, board creation/list UI, fetch boards and dynamic routing added
+- Authentication complete: Login, Register, Logout, protected routes.
+- Kanban Board: Static UI , creation/list , dynamic routing , task drag-and-drop.

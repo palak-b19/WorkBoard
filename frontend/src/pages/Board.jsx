@@ -4,7 +4,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { getBoardById } from '../services/api';
+import List from '../components/List';
+import { getBoardById, updateBoard } from '../services/api';
 
 export default function Board() {
   const { id } = useParams();
@@ -22,6 +23,39 @@ export default function Board() {
     };
     fetchBoard();
   }, [id]);
+
+  const moveTask = async (item, toListIndex, toTaskIndex) => {
+    if (!board) return;
+    const { id: taskId, listId: fromListId, index: fromTaskIndex } = item;
+    const fromListIndex = board.lists.findIndex(
+      (list) => list.id === fromListId
+    );
+
+    // Create new lists array
+    const newLists = [...board.lists];
+    const fromList = { ...newLists[fromListIndex] };
+    const toList = { ...newLists[toListIndex] };
+
+    // Remove task from source list
+    const [task] = fromList.tasks.splice(fromTaskIndex, 1);
+
+    // Add task to destination list
+    toList.tasks.splice(toTaskIndex, 0, task);
+
+    // Update lists
+    newLists[fromListIndex] = fromList;
+    newLists[toListIndex] = toList;
+
+    // Update state and API
+    setBoard({ ...board, lists: newLists });
+    try {
+      await updateBoard(id, newLists);
+    } catch (err) {
+      setError('Failed to update board');
+      // Revert state on error
+      fetchBoard();
+    }
+  };
 
   if (error) {
     return (
@@ -54,24 +88,13 @@ export default function Board() {
         <h2 className="text-2xl font-bold mb-4">{board.title}</h2>
         <DndProvider backend={HTML5Backend}>
           <div className="flex gap-4">
-            {board.lists.map((list) => (
-              <div key={list.id} className="bg-gray-100 p-4 rounded-lg w-1/3">
-                <h3 className="text-lg font-semibold mb-2">{list.title}</h3>
-                <div className="min-h-[200px]">
-                  {list.tasks.length === 0 ? (
-                    <p className="text-gray-500">No tasks</p>
-                  ) : (
-                    list.tasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className="bg-white p-2 mb-2 rounded shadow"
-                      >
-                        {task.title}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+            {board.lists.map((list, listIndex) => (
+              <List
+                key={list.id}
+                list={list}
+                listIndex={listIndex}
+                moveTask={moveTask}
+              />
             ))}
           </div>
         </DndProvider>
