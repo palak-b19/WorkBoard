@@ -5,6 +5,7 @@ import App from './pages/App';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Board from './pages/Board';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
@@ -20,6 +21,22 @@ createRoot(document.getElementById('root')).render(
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/board"
+          element={
+            <ProtectedRoute>
+              <Board />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/board/:id"
+          element={
+            <ProtectedRoute>
+              <Board />
             </ProtectedRoute>
           }
         />

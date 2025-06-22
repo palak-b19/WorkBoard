@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }) {
   useEffect(() => {
     const validateToken = async () => {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setIsValidating(false);
         setIsAuthenticated(false);
@@ -20,10 +20,10 @@ export default function ProtectedRoute({ children }) {
         // Validate token with backend
         const response = await api.get('/auth/validate', {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        
+
         if (response.status === 200) {
           setIsAuthenticated(true);
         } else {
