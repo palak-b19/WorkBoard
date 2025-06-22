@@ -54,4 +54,26 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// Update a board's lists
+router.patch('/:id', authMiddleware, async (req, res) => {
+  try {
+    const { lists } = req.body;
+    if (!lists || !Array.isArray(lists)) {
+      return res.status(400).json({ error: 'Invalid lists data' });
+    }
+    const board = await Board.findOne({
+      _id: req.params.id,
+      userId: req.user.userId,
+    });
+    if (!board) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+    board.lists = lists;
+    await board.save();
+    res.status(200).json(board);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;
