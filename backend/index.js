@@ -11,10 +11,7 @@ const app = express();
 app.use(cors()); // Add this line
 app.use(express.json());
 app.use('/api/auth', authRoutes);
-<<<<<<< HEAD
 app.use('/api/boards', boardRoutes);
-=======
->>>>>>> feature/auth-api
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', mongodb: mongoose.connection.readyState });
 });
