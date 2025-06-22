@@ -1,5 +1,6 @@
 const express = require('express');
-const Board = require('../models/board');
+const sanitizeHtml = require('sanitize-html');
+const Board = require('../models/Board');
 const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.post('/', authMiddleware, async (req, res) => {
     await board.save();
     res.status(201).json(board);
   } catch (err) {
+    console.error('POST board error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -34,6 +36,7 @@ router.get('/', authMiddleware, async (req, res) => {
     );
     res.status(200).json(boards);
   } catch (err) {
+    console.error('GET boards error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -41,6 +44,9 @@ router.get('/', authMiddleware, async (req, res) => {
 // Get a specific board by ID
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
     const board = await Board.findOne({
       _id: req.params.id,
       userId: req.user.userId,
@@ -50,44 +56,83 @@ router.get('/:id', authMiddleware, async (req, res) => {
     }
     res.status(200).json(board);
   } catch (err) {
+    console.error('GET board error:', err);
+    if (err.name === 'CastError') {
+      return res.status(404).json({ error: 'Board not found' });
+    }
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// NEW: Update a board's lists (PATCH endpoint)
+// Update a board's lists
 router.patch('/:id', authMiddleware, async (req, res) => {
   try {
     const { lists } = req.body;
-
-    // Validate that lists is provided and is an array
     if (!lists || !Array.isArray(lists)) {
       return res.status(400).json({ error: 'Invalid lists data' });
     }
-
-    // Validate MongoDB ObjectId format
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(404).json({ error: 'Board not found' });
     }
-
-    // Find the board and ensure it belongs to the authenticated user
     const board = await Board.findOne({
       _id: req.params.id,
       userId: req.user.userId,
     });
-
     if (!board) {
       return res.status(404).json({ error: 'Board not found' });
     }
-
-    // Update the board's lists
     board.lists = lists;
     await board.save();
-
-    // Return the updated board
     res.status(200).json(board);
   } catch (err) {
     console.error('PATCH board error:', err);
-    // Check if it's a MongoDB CastError (invalid ObjectId)
+    if (err.name === 'CastError') {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Create a task in a specific list
+router.post('/:id/tasks', authMiddleware, async (req, res) => {
+  try {
+    const { listId, title, description, dueDate } = req.body;
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+    if (!title) {
+      return res.status(400).json({ error: 'Task title is required' });
+    }
+    if (!listId || !['todo', 'inprogress', 'done'].includes(listId)) {
+      return res.status(400).json({ error: 'Invalid list ID' });
+    }
+    const board = await Board.findOne({
+      _id: req.params.id,
+      userId: req.user.userId,
+    });
+    if (!board) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+    const list = board.lists.find((l) => l.id === listId);
+    if (!list) {
+      return res.status(400).json({ error: 'List not found' });
+    }
+    const taskId = `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const task = {
+      id: taskId,
+      title: sanitizeHtml(title, { allowedTags: [], allowedAttributes: {} }),
+      description: description
+        ? sanitizeHtml(description, { allowedTags: [], allowedAttributes: {} })
+        : undefined,
+      dueDate: dueDate
+        ? new Date(dueDate).toISOString().split('T')[0]
+        : undefined,
+    };
+    list.tasks.push(task);
+    await board.save();
+    res.status(201).json(board);
+  } catch (err) {
+    console.error('POST task error:', err);
     if (err.name === 'CastError') {
       return res.status(404).json({ error: 'Board not found' });
     }
