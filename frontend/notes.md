@@ -35,3 +35,6 @@ Login/Register UI tested: navigation, form submission, error handling.
 - Created `Task.jsx` and `List.jsx` for draggable tasks and droppable lists.
 - Integrated with `updateBoard` API to persist task positions.
 - Tested: Task movement between lists, error handling.
+- Added task creation form in `List.jsx` for each list, with `submitted` state validation.
+- Integrated with `createTask` API to add tasks to specific lists.
+- Updated `Board.jsx` to pass `boardId` and `setBoard` to `List.jsx`
