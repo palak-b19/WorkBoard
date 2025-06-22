@@ -9,7 +9,7 @@ export default function Header() {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setIsAuthenticated(false);
         return;
@@ -18,8 +18,8 @@ export default function Header() {
       try {
         const response = await api.get('/auth/validate', {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         setIsAuthenticated(response.status === 200);
       } catch (error) {
