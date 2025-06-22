@@ -31,28 +31,21 @@ export default function Board() {
       (list) => list.id === fromListId
     );
 
-    // Create new lists array
     const newLists = [...board.lists];
     const fromList = { ...newLists[fromListIndex] };
     const toList = { ...newLists[toListIndex] };
 
-    // Remove task from source list
     const [task] = fromList.tasks.splice(fromTaskIndex, 1);
-
-    // Add task to destination list
     toList.tasks.splice(toTaskIndex, 0, task);
 
-    // Update lists
     newLists[fromListIndex] = fromList;
     newLists[toListIndex] = toList;
 
-    // Update state and API
     setBoard({ ...board, lists: newLists });
     try {
       await updateBoard(id, newLists);
     } catch (err) {
       setError('Failed to update board');
-      // Revert state on error
       fetchBoard();
     }
   };
@@ -94,6 +87,8 @@ export default function Board() {
                 list={list}
                 listIndex={listIndex}
                 moveTask={moveTask}
+                boardId={id}
+                setBoard={setBoard}
               />
             ))}
           </div>
