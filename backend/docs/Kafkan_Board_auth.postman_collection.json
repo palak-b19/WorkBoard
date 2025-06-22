@@ -3,7 +3,8 @@
     "_postman_id": "6ca1ce89-36e2-4628-8875-e4902f0661e4",
     "name": "Kafkan_Board_auth",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "36688354"
+    "_exporter_id": "36688354",
+    "_collection_link": "https://planetary-moon-592209.postman.co/workspace/My-Workspace~30a3b6e6-4dda-4a65-8c59-da3410c7c253/collection/36688354-6ca1ce89-36e2-4628-8875-e4902f0661e4?action=share&source=collection_link&creator=36688354"
   },
   "item": [
     {
@@ -352,6 +353,182 @@
           "host": ["localhost"],
           "port": "3000",
           "path": ["api", "boards", "123"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sucess : Patch Request for Board ID - move task to in progress",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1NzkyNDQsImV4cCI6MTc1MDU4Mjg0NH0.k5jyzGY9qXIIwrIJS2x_FKIqYlSHzYwJVPIXUH88ToM",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"lists\": [\r\n    { \r\n      \"id\": \"todo\", \r\n      \"title\": \"To Do\", \r\n      \"tasks\": [] \r\n    },\r\n    { \r\n      \"id\": \"inprogress\", \r\n      \"title\": \"In Progress\", \r\n      \"tasks\": [\r\n        {\r\n          \"id\": \"task1\",\r\n          \"title\": \"Design user interface\"\r\n        }\r\n      ]\r\n    },\r\n    { \r\n      \"id\": \"done\", \r\n      \"title\": \"Done\", \r\n      \"tasks\": [] \r\n    }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Invalid List Data",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1NzkyNDQsImV4cCI6MTc1MDU4Mjg0NH0.k5jyzGY9qXIIwrIJS2x_FKIqYlSHzYwJVPIXUH88ToM",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"lists\": {}\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Can't move to \"to_do\" due to invalid token",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1NzkyNDQsImV4cCI6MTc1MDU4Mjg0NH0.k5jyzGY9qXIIwrIJS2x_FKIqYlSHzYwJVPIXUH88ToM",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"lists\": {}\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Can't move to \"in_progress\" due to invalid token",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer 123",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"lists\": {}\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failed : Can't move to \"in_progress\" due to incorrect Board ID",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1Nzk5NjEsImV4cCI6MTc1MDU4MzU2MX0.pDpy8iwMBDsumwzNTpVMjqIZ_sEo4Xbmch0i1n3PEhs",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"lists\": [\r\n    { \"id\": \"todo\", \"title\": \"To Do\", \"tasks\": [] },\r\n    { \"id\": \"inprogress\", \"title\": \"In Progress\", \"tasks\": [{ \"id\": \"task1\", \"title\": \"Design user interface\" }] },\r\n    { \"id\": \"done\", \"title\": \"Done\", \"tasks\": [] }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/6857053c397ec6923778ffe6",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "6857053c397ec6923778ffe6"]
         }
       },
       "response": []
