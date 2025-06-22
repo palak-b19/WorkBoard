@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // Update to Heroku URL post-merge
+  baseURL: 'https://task-management-platform-746079896238.herokuapp.com/api', // Update to Heroku URL post-merge
 });
 
 export const register = (email, password) =>
