@@ -55,6 +55,13 @@
   - Body: { lists: array }
   - Response: 200 { board: object } or 400/401/404/500 { "error": string }
 
+- POST /api/boards/:id/tasks
+
+  - Headers: Authorization: Bearer <token>
+  - Body: { listId: string, title: string, description: string (optional), dueDate: string (optional, YYYY-MM-DD) }
+  - Response: 201 { board: object } or 400/401/404/500 { "error": string }
+  - Notes: Sanitizes title/description for XSS, validates listId (todo, inprogress, done)
+
   ## Backend Status
 
 - Authentication complete: Register, Login, Validate endpoints with JWT.
