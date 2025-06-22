@@ -54,24 +54,43 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Update a board's lists
+// NEW: Update a board's lists (PATCH endpoint)
 router.patch('/:id', authMiddleware, async (req, res) => {
   try {
     const { lists } = req.body;
+
+    // Validate that lists is provided and is an array
     if (!lists || !Array.isArray(lists)) {
       return res.status(400).json({ error: 'Invalid lists data' });
     }
+
+    // Validate MongoDB ObjectId format
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+
+    // Find the board and ensure it belongs to the authenticated user
     const board = await Board.findOne({
       _id: req.params.id,
       userId: req.user.userId,
     });
+
     if (!board) {
       return res.status(404).json({ error: 'Board not found' });
     }
+
+    // Update the board's lists
     board.lists = lists;
     await board.save();
+
+    // Return the updated board
     res.status(200).json(board);
   } catch (err) {
+    console.error('PATCH board error:', err);
+    // Check if it's a MongoDB CastError (invalid ObjectId)
+    if (err.name === 'CastError') {
+      return res.status(404).json({ error: 'Board not found' });
+    }
     res.status(500).json({ error: 'Server error' });
   }
 });
