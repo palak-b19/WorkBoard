@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://task-management-platform-746079896238.herokuapp.com/api',
+  baseURL: 'http://localhost:3000/api',
 });
 
 export const register = (email, password) =>
@@ -41,7 +41,12 @@ export const updateBoard = (id, lists) =>
 export const createTask = (boardId, listId, task) =>
   api.post(
     `/boards/${boardId}/tasks`,
-    { listId, ...task },
+    {
+      listId,
+      title: task.title,
+      description: task.description,
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : undefined,
+    },
     {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     }
