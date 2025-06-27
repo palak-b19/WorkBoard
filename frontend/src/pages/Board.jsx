@@ -49,10 +49,15 @@ export default function Board() {
     // Create deep copies of the lists to avoid mutation
     const newLists = board.lists.map((list) => ({
       ...list,
-      tasks: list.tasks.map((task) => ({
-        ...task,
-        id: task._id || task.id, // Ensure we preserve the ID format
-      })),
+      tasks: list.tasks.map((task) => {
+        // Ensure we're using the MongoDB _id format for the backend
+        const taskCopy = { ...task };
+        if (task.id && !task._id) {
+          taskCopy._id = task.id;
+          delete taskCopy.id;
+        }
+        return taskCopy;
+      }),
     }));
 
     // Get the task being moved
@@ -83,8 +88,21 @@ export default function Board() {
     setBoard(updatedBoard);
 
     try {
+      // Prepare lists for backend by ensuring all tasks use _id
+      const listsForBackend = newLists.map((list) => ({
+        ...list,
+        tasks: list.tasks.map((task) => {
+          const taskForBackend = { ...task };
+          if (task.id && !task._id) {
+            taskForBackend._id = task.id;
+            delete taskForBackend.id;
+          }
+          return taskForBackend;
+        }),
+      }));
+
       // Sync with backend
-      await updateBoard(id, newLists);
+      await updateBoard(id, listsForBackend);
       console.log('Task moved successfully');
     } catch (err) {
       console.error('Failed to update board:', err);
