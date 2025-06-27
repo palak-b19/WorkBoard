@@ -110,13 +110,33 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
 
       // Update board with the complete server response, ensuring tasks arrays are preserved
       setBoard((prevBoard) => {
+        // First, create a map of existing tasks by list ID
+        const existingTasksByList = {};
+        prevBoard.lists.forEach((list) => {
+          existingTasksByList[list.id] = Array.isArray(list.tasks)
+            ? [...list.tasks]
+            : [];
+        });
+
+        // Now create the new board state, merging in the new task
         const updatedBoard = {
           ...response.data,
-          lists: response.data.lists.map((newList) => ({
-            ...newList,
-            tasks: Array.isArray(newList.tasks) ? [...newList.tasks] : [],
-          })),
+          lists: response.data.lists.map((newList) => {
+            const existingTasks = existingTasksByList[newList.id] || [];
+            const newTasks = Array.isArray(newList.tasks) ? newList.tasks : [];
+
+            // For the list that got the new task, use the server's tasks
+            // For other lists, keep their existing tasks
+            const tasks = newList.id === list.id ? newTasks : existingTasks;
+
+            return {
+              ...newList,
+              tasks: [...tasks], // Create a new array to ensure state updates
+            };
+          }),
         };
+
+        console.log('Previous board state:', prevBoard);
         console.log('Updated board state:', updatedBoard);
         return updatedBoard;
       });
