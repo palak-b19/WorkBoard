@@ -102,7 +102,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
             ? {
                 ...l,
                 tasks: l.tasks.map((t) =>
-                  t._id === tempId ? response.data.task : t
+                  t._id === tempId ? { ...t, _id: response.data._id } : t
                 ),
               }
             : l
