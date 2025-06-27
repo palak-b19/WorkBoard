@@ -60,6 +60,9 @@ export default function Board() {
       return;
     }
 
+    // If this is a temporary task (created but not yet saved), don't try to sync with backend
+    const isTemporaryTask = taskToMove._id?.toString().startsWith('temp-');
+
     console.log('Found task to move:', taskToMove);
 
     // Create deep copies of the lists to avoid mutation
@@ -97,16 +100,30 @@ export default function Board() {
     const updatedBoard = { ...board, lists: newLists };
     setBoard(updatedBoard);
 
+    // Don't try to sync with backend if this is a temporary task
+    if (isTemporaryTask) {
+      console.log('Skipping backend sync for temporary task');
+      return;
+    }
+
     try {
       // Prepare lists for backend by ensuring all tasks use _id
       const listsForBackend = newLists.map((list) => ({
         ...list,
-        tasks: list.tasks.map((task) => ({
-          ...task,
-          _id: task._id || task.id,
-          // Remove any temporary id field
-          id: undefined,
-        })),
+        tasks: list.tasks
+          .map((task) => {
+            // Skip temporary tasks when sending to backend
+            if (task._id?.toString().startsWith('temp-')) {
+              return null;
+            }
+            return {
+              ...task,
+              _id: task._id || task.id,
+              // Remove any temporary id field
+              id: undefined,
+            };
+          })
+          .filter(Boolean), // Remove null tasks
       }));
 
       console.log('Sending to backend:', listsForBackend);
