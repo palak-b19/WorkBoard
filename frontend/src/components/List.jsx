@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDrop } from 'react-dnd';
 import Task from './Task';
-import { createTask } from '../services/api';
+import { createTask, getBoardById } from '../services/api';
 
 const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
   const [taskTitle, setTaskTitle] = useState('');
@@ -108,38 +108,22 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
 
       console.log('New task from response:', newTaskFromResponse);
 
-      // Update board with the complete server response, ensuring tasks arrays are preserved
-      setBoard((prevBoard) => {
-        // First, create a map of existing tasks by list ID
-        const existingTasksByList = {};
-        prevBoard.lists.forEach((list) => {
-          existingTasksByList[list.id] = Array.isArray(list.tasks)
-            ? [...list.tasks]
-            : [];
+      // Fetch the latest board state
+      try {
+        const boardResponse = await getBoardById(boardId);
+        console.log('Fetched updated board:', boardResponse.data);
+
+        // Update board with fresh data from server
+        setBoard({
+          ...boardResponse.data,
+          lists: boardResponse.data.lists.map((list) => ({
+            ...list,
+            tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
+          })),
         });
-
-        // Now create the new board state, merging in the new task
-        const updatedBoard = {
-          ...response.data,
-          lists: response.data.lists.map((newList) => {
-            const existingTasks = existingTasksByList[newList.id] || [];
-            const newTasks = Array.isArray(newList.tasks) ? newList.tasks : [];
-
-            // For the list that got the new task, use the server's tasks
-            // For other lists, keep their existing tasks
-            const tasks = newList.id === list.id ? newTasks : existingTasks;
-
-            return {
-              ...newList,
-              tasks: [...tasks], // Create a new array to ensure state updates
-            };
-          }),
-        };
-
-        console.log('Previous board state:', prevBoard);
-        console.log('Updated board state:', updatedBoard);
-        return updatedBoard;
-      });
+      } catch (err) {
+        console.error('Failed to fetch updated board:', err);
+      }
 
       // Reset form
       setTaskTitle('');
