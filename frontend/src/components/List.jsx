@@ -67,24 +67,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
       return;
     }
 
-    // Create temporary task for optimistic update
-    const tempId = `temp-${new Date().getTime()}`;
-    const newTask = {
-      _id: tempId, // Use _id format consistently
-      title: taskTitle.trim(),
-      description: taskDescription.trim() || undefined,
-      dueDate: taskDueDate ? new Date(taskDueDate) : undefined,
-      createdAt: new Date(),
-    };
-
-    // Optimistically update UI
-    setBoard((prev) => ({
-      ...prev,
-      lists: prev.lists.map((l) =>
-        l.id === list.id ? { ...l, tasks: [...l.tasks, newTask] } : l
-      ),
-    }));
-
+    // Begin creation – disable button until finished
     setIsCreating(true);
 
     try {
