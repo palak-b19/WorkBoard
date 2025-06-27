@@ -142,20 +142,22 @@ export default function Board() {
       // Prepare lists for backend by ensuring all tasks use _id
       const listsForBackend = newLists.map((list) => ({
         ...list,
-        tasks: (Array.isArray(list.tasks) ? list.tasks : [])
-          .map((task) => {
-            // Skip temporary tasks when sending to backend
-            if (task._id?.toString().startsWith('temp-')) {
-              return null;
-            }
-            return {
-              ...task,
-              _id: task._id || task.id,
-              // Remove any temporary id field
-              id: undefined,
-            };
-          })
-          .filter(Boolean), // Remove null tasks
+        tasks: Array.isArray(list.tasks)
+          ? list.tasks
+              .map((task) => {
+                // Skip temporary tasks when sending to backend
+                if (task._id?.toString().startsWith('temp-')) {
+                  return null;
+                }
+                return {
+                  ...task,
+                  _id: task._id || task.id,
+                  // Remove any temporary id field
+                  id: undefined,
+                };
+              })
+              .filter(Boolean)
+          : [], // Remove null tasks
       }));
 
       console.log('Sending to backend:', listsForBackend);
@@ -165,7 +167,17 @@ export default function Board() {
       console.log('Task moved successfully');
 
       // Fetch the latest state from the server to ensure consistency
-      await fetchBoard();
+      const response = await getBoardById(id);
+      console.log('Fetched fresh board data:', response.data);
+
+      // Update with fresh data
+      setBoard({
+        ...response.data,
+        lists: response.data.lists.map((list) => ({
+          ...list,
+          tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
+        })),
+      });
     } catch (err) {
       console.error('Failed to update board:', err);
       setError('Failed to update board');
