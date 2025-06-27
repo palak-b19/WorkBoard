@@ -96,33 +96,49 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
 
       console.log('Create task response:', response.data);
 
-      // Get the newly created task from the response
-      const newTaskFromResponse = response.data.lists
-        .find((l) => l.id === list.id)
-        ?.tasks.find((t) => t.title === taskTitle.trim());
-
-      if (!newTaskFromResponse) {
-        console.error('Could not find newly created task in response');
-        return;
-      }
-
-      console.log('New task from response:', newTaskFromResponse);
-
       // Fetch the latest board state
       try {
         const boardResponse = await getBoardById(boardId);
-        console.log('Fetched updated board:', boardResponse.data);
+        const freshBoard = boardResponse.data;
+        console.log('Fetched updated board:', freshBoard);
+
+        // Find the newly created task in the response
+        const updatedList = freshBoard.lists.find((l) => l.id === list.id);
+        const newTask = updatedList?.tasks?.find(
+          (t) => t.title === taskTitle.trim()
+        );
+
+        if (!newTask) {
+          console.error('Could not find newly created task in board response');
+          return;
+        }
+
+        console.log('Found new task in board response:', newTask);
 
         // Update board with fresh data from server
-        setBoard({
-          ...boardResponse.data,
-          lists: boardResponse.data.lists.map((list) => ({
-            ...list,
-            tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
-          })),
+        setBoard((prevBoard) => {
+          const updatedBoard = {
+            ...freshBoard,
+            lists: freshBoard.lists.map((serverList) => {
+              // Ensure tasks array exists
+              const tasks = Array.isArray(serverList.tasks)
+                ? serverList.tasks
+                : [];
+              return {
+                ...serverList,
+                tasks: tasks.map((task) => ({
+                  ...task,
+                  _id: task._id || task.id, // Ensure _id is set
+                })),
+              };
+            }),
+          };
+          console.log('Setting board state to:', updatedBoard);
+          return updatedBoard;
         });
       } catch (err) {
         console.error('Failed to fetch updated board:', err);
+        return;
       }
 
       // Reset form
@@ -133,17 +149,6 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
       setError('');
     } catch (err) {
       console.error('Create task error:', err);
-
-      // Revert optimistic update
-      setBoard((prev) => ({
-        ...prev,
-        lists: prev.lists.map((l) =>
-          l.id === list.id
-            ? { ...l, tasks: l.tasks.filter((t) => t._id !== tempId) }
-            : l
-        ),
-      }));
-
       setError(err.response?.data?.error || 'Failed to create task');
       setSubmitted(false);
     } finally {

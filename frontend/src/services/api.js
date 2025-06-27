@@ -38,18 +38,27 @@ export const updateBoard = (id, lists) =>
     }
   );
 
-export const createTask = (boardId, listId, task) =>
-  api.post(
-    `/boards/${boardId}/tasks`,
-    {
-      listId,
-      title: task.title,
-      description: task.description,
-      dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : undefined,
-    },
-    {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    }
-  );
+export const createTask = (boardId, listId, task) => {
+  console.log('Creating task with data:', { boardId, listId, task });
+  return api
+    .post(
+      `/boards/${boardId}/tasks`,
+      {
+        listId,
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate
+          ? new Date(task.dueDate).toISOString()
+          : undefined,
+      },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }
+    )
+    .then((response) => {
+      console.log('Create task response:', response.data);
+      return response;
+    });
+};
 
 export default api;

@@ -49,6 +49,7 @@ export default function Board() {
 
     console.log('From list ID:', fromListId);
     console.log('From list index:', fromListIndex);
+    console.log('Task ID being moved:', taskId);
 
     if (fromListIndex === -1) {
       console.error('Source list not found:', fromListId);
@@ -76,12 +77,7 @@ export default function Board() {
     const taskToMove = sourceList.tasks.find((task) => {
       const taskIdStr = task._id?.toString() || task.id?.toString();
       const searchIdStr = taskId?.toString();
-      console.log(
-        'Comparing task ID:',
-        taskIdStr,
-        'with search ID:',
-        searchIdStr
-      );
+      console.log('Comparing task IDs:', { taskIdStr, searchIdStr });
       return taskIdStr === searchIdStr;
     });
 
@@ -94,17 +90,14 @@ export default function Board() {
       return;
     }
 
-    // If this is a temporary task (created but not yet saved), don't try to sync with backend
-    const isTemporaryTask = (taskToMove._id?.toString() || '').startsWith(
-      'temp-'
-    );
-
     console.log('Found task to move:', taskToMove);
 
     // Remove task from source list
-    newLists[fromListIndex].tasks = sourceList.tasks.filter(
-      (task) => (task._id || task.id) !== taskId
-    );
+    newLists[fromListIndex].tasks = sourceList.tasks.filter((task) => {
+      const taskIdStr = task._id?.toString() || task.id?.toString();
+      const searchIdStr = taskId?.toString();
+      return taskIdStr !== searchIdStr;
+    });
 
     // Add task to destination list at the specified position
     const actualToIndex = Math.min(
@@ -130,34 +123,22 @@ export default function Board() {
         tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
       })),
     };
-    setBoard(updatedBoard);
 
-    // Don't try to sync with backend if this is a temporary task
-    if (isTemporaryTask) {
-      console.log('Skipping backend sync for temporary task');
-      return;
-    }
+    // Update UI first for responsiveness
+    setBoard(updatedBoard);
 
     try {
       // Prepare lists for backend by ensuring all tasks use _id
       const listsForBackend = newLists.map((list) => ({
         ...list,
         tasks: Array.isArray(list.tasks)
-          ? list.tasks
-              .map((task) => {
-                // Skip temporary tasks when sending to backend
-                if (task._id?.toString().startsWith('temp-')) {
-                  return null;
-                }
-                return {
-                  ...task,
-                  _id: task._id || task.id,
-                  // Remove any temporary id field
-                  id: undefined,
-                };
-              })
-              .filter(Boolean)
-          : [], // Remove null tasks
+          ? list.tasks.map((task) => ({
+              ...task,
+              _id: task._id || task.id,
+              // Remove any temporary id field
+              id: undefined,
+            }))
+          : [],
       }));
 
       console.log('Sending to backend:', listsForBackend);
@@ -171,18 +152,27 @@ export default function Board() {
       console.log('Fetched fresh board data:', response.data);
 
       // Update with fresh data
-      setBoard({
-        ...response.data,
-        lists: response.data.lists.map((list) => ({
-          ...list,
-          tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
-        })),
+      setBoard((prevBoard) => {
+        const freshBoard = {
+          ...response.data,
+          lists: response.data.lists.map((list) => ({
+            ...list,
+            tasks: Array.isArray(list.tasks)
+              ? list.tasks.map((task) => ({
+                  ...task,
+                  _id: task._id || task.id, // Ensure _id is consistent
+                }))
+              : [],
+          })),
+        };
+        console.log('Setting final board state:', freshBoard);
+        return freshBoard;
       });
     } catch (err) {
       console.error('Failed to update board:', err);
       setError('Failed to update board');
       // Revert to original state on error
-      fetchBoard();
+      setBoard(board);
     }
   };
 
