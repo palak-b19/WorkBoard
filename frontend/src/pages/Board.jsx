@@ -15,7 +15,15 @@ export default function Board() {
   const fetchBoard = async () => {
     try {
       const response = await getBoardById(id);
-      setBoard(response.data);
+      // Ensure tasks arrays are properly initialized
+      const boardData = {
+        ...response.data,
+        lists: response.data.lists.map((list) => ({
+          ...list,
+          tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
+        })),
+      };
+      setBoard(boardData);
     } catch (err) {
       setError('Failed to fetch board');
     }
@@ -53,17 +61,17 @@ export default function Board() {
       return;
     }
 
+    // Create deep copies of the lists to avoid mutation
+    const newLists = board.lists.map((list) => ({
+      ...list,
+      tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
+    }));
+
     // Find the actual task being moved using the taskId
-    const sourceList = board.lists[fromListIndex];
+    const sourceList = newLists[fromListIndex];
     console.log('Source list:', sourceList);
     console.log('Source list tasks:', sourceList.tasks);
     console.log('Looking for task with ID:', taskId);
-
-    // Ensure tasks array exists and is an array
-    if (!Array.isArray(sourceList.tasks)) {
-      console.error('Source list tasks is not an array:', sourceList.tasks);
-      return;
-    }
 
     const taskToMove = sourceList.tasks.find((task) => {
       const taskIdStr = task._id?.toString() || task.id?.toString();
@@ -93,31 +101,15 @@ export default function Board() {
 
     console.log('Found task to move:', taskToMove);
 
-    // Create deep copies of the lists to avoid mutation
-    const newLists = board.lists.map((list) => ({
-      ...list,
-      tasks: Array.isArray(list.tasks)
-        ? list.tasks.map((task) => ({
-            ...task,
-            // Ensure we preserve the MongoDB _id format
-            _id: task._id || task.id,
-          }))
-        : [],
-    }));
-
     // Remove task from source list
-    if (Array.isArray(newLists[fromListIndex].tasks)) {
-      newLists[fromListIndex].tasks = newLists[fromListIndex].tasks.filter(
-        (task) => (task._id || task.id) !== taskId
-      );
-    }
+    newLists[fromListIndex].tasks = sourceList.tasks.filter(
+      (task) => (task._id || task.id) !== taskId
+    );
 
     // Add task to destination list at the specified position
     const actualToIndex = Math.min(
       toTaskIndex,
-      Array.isArray(newLists[toListIndex].tasks)
-        ? newLists[toListIndex].tasks.length
-        : 0
+      newLists[toListIndex].tasks.length
     );
 
     // Ensure the task we're inserting uses _id
@@ -125,11 +117,6 @@ export default function Board() {
       ...taskToMove,
       _id: taskToMove._id || taskToMove.id,
     };
-
-    // Ensure destination list has a tasks array
-    if (!Array.isArray(newLists[toListIndex].tasks)) {
-      newLists[toListIndex].tasks = [];
-    }
 
     newLists[toListIndex].tasks.splice(actualToIndex, 0, taskToInsert);
 
