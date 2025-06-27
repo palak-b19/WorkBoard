@@ -1,14 +1,11 @@
 import { useDrag } from 'react-dnd';
 
 const Task = ({ task, index, listId }) => {
-  // Get the task ID, preferring _id over id
-  const taskId = task._id || task.id;
-
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: 'TASK',
       item: {
-        id: taskId,
+        id: task._id || task.id,
         index,
         listId,
       },
@@ -16,8 +13,8 @@ const Task = ({ task, index, listId }) => {
         isDragging: !!monitor.isDragging(),
       }),
     }),
-    [taskId, index, listId]
-  ); // Add dependencies to ensure the drag item updates
+    [task._id, task.id, index, listId]
+  );
 
   const formatDate = (dateString) => {
     if (!dateString) return null;
@@ -32,19 +29,19 @@ const Task = ({ task, index, listId }) => {
   return (
     <div
       ref={drag}
-      className={`bg-white p-3 mb-2 rounded-lg shadow-sm border cursor-move ${
-        isDragging ? 'opacity-50' : 'opacity-100'
+      className={`bg-white p-4 mb-2 rounded-lg shadow ${
+        isDragging ? 'opacity-50' : ''
       }`}
-      data-task-id={taskId} // Add data attribute for debugging
     >
-      <h4 className="font-medium text-gray-800">{task.title}</h4>
+      <h4 className="font-semibold mb-2">{task.title}</h4>
       {task.description && (
-        <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+        <p className="text-gray-600 text-sm mb-2">{task.description}</p>
       )}
-      <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-        {task.dueDate && <span>Due: {formatDate(task.dueDate)}</span>}
-        {task.createdAt && <span>Created: {formatDate(task.createdAt)}</span>}
-      </div>
+      {task.dueDate && (
+        <p className="text-gray-500 text-xs">
+          Due: {new Date(task.dueDate).toLocaleDateString()}
+        </p>
+      )}
     </div>
   );
 };
