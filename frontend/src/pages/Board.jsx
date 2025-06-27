@@ -51,13 +51,27 @@ export default function Board() {
 
     // Find the actual task being moved using the taskId
     const sourceList = board.lists[fromListIndex];
-    const taskToMove = sourceList.tasks.find(
-      (task) =>
-        (task._id?.toString() || task.id?.toString()) === taskId?.toString()
-    );
+    console.log('Source list tasks:', sourceList.tasks);
+    console.log('Looking for task with ID:', taskId);
+
+    const taskToMove = sourceList.tasks.find((task) => {
+      const taskIdStr = task._id?.toString() || task.id?.toString();
+      const searchIdStr = taskId?.toString();
+      console.log(
+        'Comparing task ID:',
+        taskIdStr,
+        'with search ID:',
+        searchIdStr
+      );
+      return taskIdStr === searchIdStr;
+    });
 
     if (!taskToMove) {
       console.error('Task not found:', taskId);
+      console.error(
+        'Available task IDs:',
+        sourceList.tasks.map((t) => t._id || t.id)
+      );
       return;
     }
 
