@@ -1,5 +1,6 @@
 const express = require('express');
 const sanitizeHtml = require('sanitize-html');
+const mongoose = require('mongoose');
 const Board = require('../models/Board');
 const authMiddleware = require('../middleware/auth');
 const router = express.Router();
@@ -97,44 +98,98 @@ router.patch('/:id', authMiddleware, async (req, res) => {
 router.post('/:id/tasks', authMiddleware, async (req, res) => {
   try {
     const { listId, title, description, dueDate } = req.body;
-    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(404).json({ error: 'Board not found' });
+
+    // Validate board ID format
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ error: 'Invalid board ID format' });
     }
-    if (!title) {
+
+    // Validate required fields
+    if (!title || !title.trim()) {
       return res.status(400).json({ error: 'Task title is required' });
     }
+
     if (!listId || !['todo', 'inprogress', 'done'].includes(listId)) {
       return res.status(400).json({ error: 'Invalid list ID' });
     }
+
+    // Validate title length
+    const trimmedTitle = title.trim();
+    if (trimmedTitle.length > 100) {
+      return res
+        .status(400)
+        .json({ error: 'Task title cannot exceed 100 characters' });
+    }
+
+    // Validate description length if provided
+    if (description && description.length > 500) {
+      return res
+        .status(400)
+        .json({ error: 'Description cannot exceed 500 characters' });
+    }
+
+    // Validate due date if provided
+    if (dueDate) {
+      const dueDateObj = new Date(dueDate);
+      if (isNaN(dueDateObj.getTime())) {
+        return res.status(400).json({ error: 'Invalid due date format' });
+      }
+      if (dueDateObj <= new Date()) {
+        return res
+          .status(400)
+          .json({ error: 'Due date must be in the future' });
+      }
+    }
+
+    // Find board and validate ownership
     const board = await Board.findOne({
       _id: req.params.id,
       userId: req.user.userId,
     });
+
     if (!board) {
       return res.status(404).json({ error: 'Board not found' });
     }
+
+    // Find the target list
     const list = board.lists.find((l) => l.id === listId);
     if (!list) {
       return res.status(400).json({ error: 'List not found' });
     }
-    const taskId = `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Check if list has reached maximum tasks
+    if (list.tasks.length >= 100) {
+      return res
+        .status(400)
+        .json({ error: 'Maximum tasks limit reached for this list' });
+    }
+
+    // Create new task
     const task = {
-      id: taskId,
-      title: sanitizeHtml(title, { allowedTags: [], allowedAttributes: {} }),
+      _id: new mongoose.Types.ObjectId(),
+      title: sanitizeHtml(trimmedTitle, {
+        allowedTags: [],
+        allowedAttributes: {},
+      }),
       description: description
         ? sanitizeHtml(description, { allowedTags: [], allowedAttributes: {} })
         : undefined,
-      dueDate: dueDate
-        ? new Date(dueDate).toISOString().split('T')[0]
-        : undefined,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
+      createdAt: new Date(),
     };
+
+    // Add task to list
     list.tasks.push(task);
+
+    // Save board with new task
     await board.save();
+
+    // Return updated board
     res.status(201).json(board);
   } catch (err) {
     console.error('POST task error:', err);
-    if (err.name === 'CastError') {
-      return res.status(404).json({ error: 'Board not found' });
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: 'Server error' });
   }

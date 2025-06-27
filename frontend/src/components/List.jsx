@@ -94,8 +94,20 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
         dueDate: taskDueDate || undefined,
       });
 
-      // Update with real data from server
-      setBoard(response.data);
+      // Update with real data from server, ensuring we replace the temporary task with the real one
+      setBoard((prev) => ({
+        ...prev,
+        lists: prev.lists.map((l) =>
+          l.id === list.id
+            ? {
+                ...l,
+                tasks: l.tasks.map((t) =>
+                  t._id === tempId ? response.data.task : t
+                ),
+              }
+            : l
+        ),
+      }));
 
       // Reset form
       setTaskTitle('');
