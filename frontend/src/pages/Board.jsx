@@ -96,22 +96,28 @@ export default function Board() {
     // Create deep copies of the lists to avoid mutation
     const newLists = board.lists.map((list) => ({
       ...list,
-      tasks: list.tasks.map((task) => ({
-        ...task,
-        // Ensure we preserve the MongoDB _id format
-        _id: task._id || task.id,
-      })),
+      tasks: Array.isArray(list.tasks)
+        ? list.tasks.map((task) => ({
+            ...task,
+            // Ensure we preserve the MongoDB _id format
+            _id: task._id || task.id,
+          }))
+        : [],
     }));
 
     // Remove task from source list
-    newLists[fromListIndex].tasks = newLists[fromListIndex].tasks.filter(
-      (task) => (task._id || task.id) !== taskId
-    );
+    if (Array.isArray(newLists[fromListIndex].tasks)) {
+      newLists[fromListIndex].tasks = newLists[fromListIndex].tasks.filter(
+        (task) => (task._id || task.id) !== taskId
+      );
+    }
 
     // Add task to destination list at the specified position
     const actualToIndex = Math.min(
       toTaskIndex,
-      newLists[toListIndex].tasks.length
+      Array.isArray(newLists[toListIndex].tasks)
+        ? newLists[toListIndex].tasks.length
+        : 0
     );
 
     // Ensure the task we're inserting uses _id
@@ -120,12 +126,23 @@ export default function Board() {
       _id: taskToMove._id || taskToMove.id,
     };
 
+    // Ensure destination list has a tasks array
+    if (!Array.isArray(newLists[toListIndex].tasks)) {
+      newLists[toListIndex].tasks = [];
+    }
+
     newLists[toListIndex].tasks.splice(actualToIndex, 0, taskToInsert);
 
     console.log('Updated lists:', newLists);
 
     // Update local state immediately for responsive UI
-    const updatedBoard = { ...board, lists: newLists };
+    const updatedBoard = {
+      ...board,
+      lists: newLists.map((list) => ({
+        ...list,
+        tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
+      })),
+    };
     setBoard(updatedBoard);
 
     // Don't try to sync with backend if this is a temporary task
@@ -138,7 +155,7 @@ export default function Board() {
       // Prepare lists for backend by ensuring all tasks use _id
       const listsForBackend = newLists.map((list) => ({
         ...list,
-        tasks: list.tasks
+        tasks: (Array.isArray(list.tasks) ? list.tasks : [])
           .map((task) => {
             // Skip temporary tasks when sending to backend
             if (task._id?.toString().startsWith('temp-')) {
