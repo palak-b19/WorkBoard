@@ -70,7 +70,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
     // Create temporary task for optimistic update
     const tempId = `temp-${new Date().getTime()}`;
     const newTask = {
-      id: tempId, // Use temporary ID that will be replaced
+      _id: tempId, // Use _id format consistently
       title: taskTitle.trim(),
       description: taskDescription.trim() || undefined,
       dueDate: taskDueDate ? new Date(taskDueDate) : undefined,
@@ -111,7 +111,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
         ...prev,
         lists: prev.lists.map((l) =>
           l.id === list.id
-            ? { ...l, tasks: l.tasks.filter((t) => t.id !== tempId) }
+            ? { ...l, tasks: l.tasks.filter((t) => t._id !== tempId) }
             : l
         ),
       }));
