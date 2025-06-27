@@ -52,7 +52,8 @@ export default function Board() {
     // Find the actual task being moved using the taskId
     const sourceList = board.lists[fromListIndex];
     const taskToMove = sourceList.tasks.find(
-      (task) => task._id === taskId || task.id === taskId
+      (task) =>
+        (task._id?.toString() || task.id?.toString()) === taskId?.toString()
     );
 
     if (!taskToMove) {
@@ -61,7 +62,9 @@ export default function Board() {
     }
 
     // If this is a temporary task (created but not yet saved), don't try to sync with backend
-    const isTemporaryTask = taskToMove._id?.toString().startsWith('temp-');
+    const isTemporaryTask = (taskToMove._id?.toString() || '').startsWith(
+      'temp-'
+    );
 
     console.log('Found task to move:', taskToMove);
 
