@@ -95,19 +95,35 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
       });
 
       // Update with real data from server, ensuring we replace the temporary task with the real one
-      setBoard((prev) => ({
-        ...prev,
-        lists: prev.lists.map((l) =>
-          l.id === list.id
-            ? {
-                ...l,
-                tasks: l.tasks.map((t) =>
-                  t._id === tempId ? { ...t, _id: response.data._id } : t
-                ),
-              }
-            : l
-        ),
-      }));
+      setBoard((prev) => {
+        console.log('Previous board state:', prev);
+        console.log('Server response:', response.data);
+
+        return {
+          ...prev,
+          lists: prev.lists.map((l) =>
+            l.id === list.id
+              ? {
+                  ...l,
+                  tasks: l.tasks.map((t) => {
+                    if (t._id === tempId) {
+                      console.log(
+                        'Updating task with server ID:',
+                        response.data._id
+                      );
+                      return {
+                        ...t,
+                        _id: response.data._id,
+                        id: response.data._id, // Set both _id and id for consistency
+                      };
+                    }
+                    return t;
+                  }),
+                }
+              : l
+          ),
+        };
+      });
 
       // Reset form
       setTaskTitle('');
