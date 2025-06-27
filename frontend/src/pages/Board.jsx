@@ -30,6 +30,7 @@ export default function Board() {
 
     console.log('Moving task:', item);
     console.log('Current board state:', board);
+    console.log('Board lists:', board.lists);
 
     const { id: taskId, listId: fromListId, index: fromTaskIndex } = item;
 
@@ -37,6 +38,9 @@ export default function Board() {
     const fromListIndex = board.lists.findIndex(
       (list) => list.id === fromListId
     );
+
+    console.log('From list ID:', fromListId);
+    console.log('From list index:', fromListIndex);
 
     if (fromListIndex === -1) {
       console.error('Source list not found:', fromListId);
@@ -51,8 +55,15 @@ export default function Board() {
 
     // Find the actual task being moved using the taskId
     const sourceList = board.lists[fromListIndex];
+    console.log('Source list:', sourceList);
     console.log('Source list tasks:', sourceList.tasks);
     console.log('Looking for task with ID:', taskId);
+
+    // Ensure tasks array exists and is an array
+    if (!Array.isArray(sourceList.tasks)) {
+      console.error('Source list tasks is not an array:', sourceList.tasks);
+      return;
+    }
 
     const taskToMove = sourceList.tasks.find((task) => {
       const taskIdStr = task._id?.toString() || task.id?.toString();

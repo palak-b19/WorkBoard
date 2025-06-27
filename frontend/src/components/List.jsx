@@ -94,36 +94,22 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
         dueDate: taskDueDate || undefined,
       });
 
-      // Update with real data from server, ensuring we replace the temporary task with the real one
-      setBoard((prev) => {
-        console.log('Previous board state:', prev);
-        console.log('Server response:', response.data);
+      console.log('Create task response:', response.data);
 
-        return {
-          ...prev,
-          lists: prev.lists.map((l) =>
-            l.id === list.id
-              ? {
-                  ...l,
-                  tasks: l.tasks.map((t) => {
-                    if (t._id === tempId) {
-                      console.log(
-                        'Updating task with server ID:',
-                        response.data._id
-                      );
-                      return {
-                        ...t,
-                        _id: response.data._id,
-                        id: response.data._id, // Set both _id and id for consistency
-                      };
-                    }
-                    return t;
-                  }),
-                }
-              : l
-          ),
-        };
-      });
+      // Get the newly created task from the response
+      const newTaskFromResponse = response.data.lists
+        .find((l) => l.id === list.id)
+        ?.tasks.find((t) => t.title === taskTitle.trim());
+
+      if (!newTaskFromResponse) {
+        console.error('Could not find newly created task in response');
+        return;
+      }
+
+      console.log('New task from response:', newTaskFromResponse);
+
+      // Update board with the complete server response
+      setBoard(response.data);
 
       // Reset form
       setTaskTitle('');
