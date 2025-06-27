@@ -108,8 +108,18 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
 
       console.log('New task from response:', newTaskFromResponse);
 
-      // Update board with the complete server response
-      setBoard(response.data);
+      // Update board with the complete server response, ensuring tasks arrays are preserved
+      setBoard((prevBoard) => {
+        const updatedBoard = {
+          ...response.data,
+          lists: response.data.lists.map((newList) => ({
+            ...newList,
+            tasks: Array.isArray(newList.tasks) ? [...newList.tasks] : [],
+          })),
+        };
+        console.log('Updated board state:', updatedBoard);
+        return updatedBoard;
+      });
 
       // Reset form
       setTaskTitle('');
