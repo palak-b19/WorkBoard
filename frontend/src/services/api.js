@@ -61,4 +61,27 @@ export const createTask = (boardId, listId, task) => {
     });
 };
 
+export const updateTask = (
+  boardId,
+  taskId,
+  listId,
+  taskData // { title, description, dueDate }
+) => {
+  console.log('Updating task:', { boardId, taskId, listId, taskData });
+  return api.patch(
+    `/boards/${boardId}/tasks/${taskId}`,
+    {
+      listId,
+      title: taskData.title,
+      description: taskData.description,
+      dueDate: taskData.dueDate
+        ? new Date(taskData.dueDate).toISOString()
+        : undefined,
+    },
+    {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    }
+  );
+};
+
 export default api;

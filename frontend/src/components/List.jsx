@@ -207,6 +207,8 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
               task={task}
               index={taskIndex}
               listId={list.id}
+              boardId={boardId}
+              setBoard={setBoard}
             />
           ))
         )}
