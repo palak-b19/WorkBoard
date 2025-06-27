@@ -1,17 +1,23 @@
 import { useDrag } from 'react-dnd';
 
 const Task = ({ task, index, listId }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'TASK',
-    item: {
-      id: task._id || task.id, // Handle both MongoDB ObjectId and temporary id
-      index,
-      listId,
-    },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+  // Get the task ID, preferring _id over id
+  const taskId = task._id || task.id;
+
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: 'TASK',
+      item: {
+        id: taskId,
+        index,
+        listId,
+      },
+      collect: (monitor) => ({
+        isDragging: !!monitor.isDragging(),
+      }),
     }),
-  }));
+    [taskId, index, listId]
+  ); // Add dependencies to ensure the drag item updates
 
   const formatDate = (dateString) => {
     if (!dateString) return null;
@@ -29,6 +35,7 @@ const Task = ({ task, index, listId }) => {
       className={`bg-white p-3 mb-2 rounded-lg shadow-sm border cursor-move ${
         isDragging ? 'opacity-50' : 'opacity-100'
       }`}
+      data-task-id={taskId} // Add data attribute for debugging
     >
       <h4 className="font-medium text-gray-800">{task.title}</h4>
       {task.description && (
