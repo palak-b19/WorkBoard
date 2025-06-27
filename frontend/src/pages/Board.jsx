@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -10,7 +10,13 @@ import { getBoardById, updateBoard } from '../services/api';
 export default function Board() {
   const { id } = useParams();
   const [board, setBoard] = useState(null);
+  const boardRef = useRef(null);
   const [error, setError] = useState('');
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    boardRef.current = board;
+  }, [board]);
 
   const fetchBoard = async () => {
     try {
@@ -33,148 +39,137 @@ export default function Board() {
     fetchBoard();
   }, [id]);
 
-  const moveTask = async (item, toListIndex, toTaskIndex) => {
-    if (!board) return;
+  const moveTask = useCallback(
+    async (item, toListIndex, toTaskIndex) => {
+      const currentBoard = boardRef.current;
+      if (!currentBoard) return;
 
-    console.log('Moving task:', item);
-    console.log('Current board state:', board);
-    console.log('Board lists:', board.lists);
+      console.log('Moving task:', item);
+      console.log('Current board state:', currentBoard);
+      console.log('Board lists:', currentBoard.lists);
 
-    const { id: taskId, listId: fromListId, index: fromTaskIndex } = item;
+      const { id: taskId, listId: fromListId } = item;
 
-    // Find the source list index
-    const fromListIndex = board.lists.findIndex(
-      (list) => list.id === fromListId
-    );
-
-    console.log('From list ID:', fromListId);
-    console.log('From list index:', fromListIndex);
-    console.log('Task ID being moved:', taskId);
-
-    if (fromListIndex === -1) {
-      console.error('Source list not found:', fromListId);
-      return;
-    }
-
-    // Validate target list index
-    if (toListIndex < 0 || toListIndex >= board.lists.length) {
-      console.error('Invalid target list index:', toListIndex);
-      return;
-    }
-
-    // Create deep copies of the lists to avoid mutation
-    const newLists = board.lists.map((list) => ({
-      ...list,
-      tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
-    }));
-
-    // Find the actual task being moved using the taskId
-    const sourceList = newLists[fromListIndex];
-    console.log('Source list:', sourceList);
-    console.log('Source list tasks:', sourceList.tasks);
-    console.log('Looking for task with ID:', taskId);
-
-    const taskToMove = sourceList.tasks.find((task) => {
-      const taskIdStr = task._id?.toString() || task.id?.toString();
-      const searchIdStr = taskId?.toString();
-      console.log('Comparing task IDs:', { taskIdStr, searchIdStr });
-      return taskIdStr === searchIdStr;
-    });
-
-    if (!taskToMove) {
-      console.error('Task not found:', taskId);
-      console.error(
-        'Available task IDs:',
-        sourceList.tasks.map((t) => t._id || t.id)
+      const fromListIndex = currentBoard.lists.findIndex(
+        (list) => list.id === fromListId
       );
-      return;
-    }
 
-    console.log('Found task to move:', taskToMove);
+      console.log('From list ID:', fromListId);
+      console.log('From list index:', fromListIndex);
+      console.log('Task ID being moved:', taskId);
 
-    // Remove task from source list
-    newLists[fromListIndex].tasks = sourceList.tasks.filter((task) => {
-      const taskIdStr = task._id?.toString() || task.id?.toString();
-      const searchIdStr = taskId?.toString();
-      return taskIdStr !== searchIdStr;
-    });
+      if (fromListIndex === -1) {
+        console.error('Source list not found:', fromListId);
+        return;
+      }
 
-    // Add task to destination list at the specified position
-    const actualToIndex = Math.min(
-      toTaskIndex,
-      newLists[toListIndex].tasks.length
-    );
+      if (toListIndex < 0 || toListIndex >= currentBoard.lists.length) {
+        console.error('Invalid target list index:', toListIndex);
+        return;
+      }
 
-    // Ensure the task we're inserting uses _id
-    const taskToInsert = {
-      ...taskToMove,
-      _id: taskToMove._id || taskToMove.id,
-    };
-
-    newLists[toListIndex].tasks.splice(actualToIndex, 0, taskToInsert);
-
-    console.log('Updated lists:', newLists);
-
-    // Update local state immediately for responsive UI
-    const updatedBoard = {
-      ...board,
-      lists: newLists.map((list) => ({
+      const newLists = currentBoard.lists.map((list) => ({
         ...list,
         tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
-      })),
-    };
-
-    // Update UI first for responsiveness
-    setBoard(updatedBoard);
-
-    try {
-      // Prepare lists for backend by ensuring all tasks use _id
-      const listsForBackend = newLists.map((list) => ({
-        ...list,
-        tasks: Array.isArray(list.tasks)
-          ? list.tasks.map((task) => ({
-              ...task,
-              _id: task._id || task.id,
-              // Remove any temporary id field
-              id: undefined,
-            }))
-          : [],
       }));
 
-      console.log('Sending to backend:', listsForBackend);
+      const sourceList = newLists[fromListIndex];
+      console.log('Source list:', sourceList);
+      console.log('Source list tasks:', sourceList.tasks);
+      console.log('Looking for task with ID:', taskId);
 
-      // Sync with backend
-      await updateBoard(id, listsForBackend);
-      console.log('Task moved successfully');
-
-      // Fetch the latest state from the server to ensure consistency
-      const response = await getBoardById(id);
-      console.log('Fetched fresh board data:', response.data);
-
-      // Update with fresh data
-      setBoard((prevBoard) => {
-        const freshBoard = {
-          ...response.data,
-          lists: response.data.lists.map((list) => ({
-            ...list,
-            tasks: Array.isArray(list.tasks)
-              ? list.tasks.map((task) => ({
-                  ...task,
-                  _id: task._id || task.id, // Ensure _id is consistent
-                }))
-              : [],
-          })),
-        };
-        console.log('Setting final board state:', freshBoard);
-        return freshBoard;
+      const taskToMove = sourceList.tasks.find((task) => {
+        const taskIdStr = task._id?.toString() || task.id?.toString();
+        const searchIdStr = taskId?.toString();
+        console.log('Comparing task IDs:', { taskIdStr, searchIdStr });
+        return taskIdStr === searchIdStr;
       });
-    } catch (err) {
-      console.error('Failed to update board:', err);
-      setError('Failed to update board');
-      // Revert to original state on error
-      setBoard(board);
-    }
-  };
+
+      if (!taskToMove) {
+        console.error('Task not found:', taskId);
+        console.error(
+          'Available task IDs:',
+          sourceList.tasks.map((t) => t._id || t.id)
+        );
+        return;
+      }
+
+      console.log('Found task to move:', taskToMove);
+
+      newLists[fromListIndex].tasks = sourceList.tasks.filter((task) => {
+        const taskIdStr = task._id?.toString() || task.id?.toString();
+        const searchIdStr = taskId?.toString();
+        return taskIdStr !== searchIdStr;
+      });
+
+      const actualToIndex = Math.min(
+        toTaskIndex,
+        newLists[toListIndex].tasks.length
+      );
+
+      const taskToInsert = {
+        ...taskToMove,
+        _id: taskToMove._id || taskToMove.id,
+      };
+
+      newLists[toListIndex].tasks.splice(actualToIndex, 0, taskToInsert);
+
+      console.log('Updated lists:', newLists);
+
+      const updatedBoard = {
+        ...currentBoard,
+        lists: newLists.map((list) => ({
+          ...list,
+          tasks: Array.isArray(list.tasks) ? [...list.tasks] : [],
+        })),
+      };
+
+      setBoard(updatedBoard);
+
+      try {
+        const listsForBackend = newLists.map((list) => ({
+          ...list,
+          tasks: Array.isArray(list.tasks)
+            ? list.tasks.map((task) => ({
+                ...task,
+                _id: task._id || task.id,
+                id: undefined,
+              }))
+            : [],
+        }));
+
+        console.log('Sending to backend:', listsForBackend);
+
+        await updateBoard(id, listsForBackend);
+        console.log('Task moved successfully');
+
+        const response = await getBoardById(id);
+        console.log('Fetched fresh board data:', response.data);
+
+        setBoard((prevBoard) => {
+          const freshBoard = {
+            ...response.data,
+            lists: response.data.lists.map((list) => ({
+              ...list,
+              tasks: Array.isArray(list.tasks)
+                ? list.tasks.map((task) => ({
+                    ...task,
+                    _id: task._id || task.id,
+                  }))
+                : [],
+            })),
+          };
+          console.log('Setting final board state:', freshBoard);
+          return freshBoard;
+        });
+      } catch (err) {
+        console.error('Failed to update board:', err);
+        setError('Failed to update board');
+        setBoard(board);
+      }
+    },
+    [id]
+  );
 
   if (error) {
     return (
