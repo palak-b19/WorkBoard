@@ -17,35 +17,66 @@ const router = express.Router();
  */
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    // Fetch all boards for the current user using lean() for performance
-    const boards = await Board.find({ userId: req.user.userId }).lean();
-
-    let totalTasks = 0;
-    let completedTasks = 0;
-    let overdueTasks = 0;
-
     const now = new Date();
 
-    boards.forEach((board) => {
-      (board.lists || []).forEach((list) => {
-        const tasks = Array.isArray(list.tasks) ? list.tasks : [];
-        totalTasks += tasks.length;
+    // Use MongoDB aggregation for efficiency on large data sets
+    const [result] = await Board.aggregate([
+      { $match: { userId: mongoose.Types.ObjectId(req.user.userId) } },
+      { $unwind: '$lists' },
+      {
+        $unwind: {
+          path: '$lists.tasks',
+          preserveNullAndEmptyArrays: true, // handle empty task arrays
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalTasks: {
+            $sum: {
+              $cond: [{ $gt: ['$lists.tasks', null] }, 1, 0],
+            },
+          },
+          completedTasks: {
+            $sum: {
+              $cond: [{ $eq: ['$lists.id', 'done'] }, 1, 0],
+            },
+          },
+          overdueTasks: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $ne: ['$lists.id', 'done'] },
+                    { $gt: ['$lists.tasks.dueDate', null] },
+                    { $lt: ['$lists.tasks.dueDate', now] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalTasks: 1,
+          completedTasks: 1,
+          overdueTasks: 1,
+        },
+      },
+    ]);
 
-        if (list.id === 'done') {
-          completedTasks += tasks.length;
-        } else {
-          // Only non-completed tasks can be overdue. Guard against null items.
-          overdueTasks += tasks.reduce((count, task) => {
-            if (task && task.dueDate && new Date(task.dueDate) < now) {
-              return count + 1;
-            }
-            return count;
-          }, 0);
-        }
-      });
-    });
+    // If user has no boards/tasks, aggregation returns undefined
+    if (!result) {
+      return res
+        .status(200)
+        .json({ totalTasks: 0, completedTasks: 0, overdueTasks: 0 });
+    }
 
-    res.status(200).json({ totalTasks, completedTasks, overdueTasks });
+    return res.status(200).json(result);
   } catch (err) {
     console.error('GET analytics error:', err);
     return res.status(500).json({ error: 'Server error' });

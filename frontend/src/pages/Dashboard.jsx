@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { createBoard, getBoards } from '../services/api';
+import { createBoard, getBoards, getAnalytics } from '../services/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,16 +12,46 @@ export default function Dashboard() {
   const [boards, setBoards] = useState([]);
   const [fetchError, setFetchError] = useState('');
 
+  // Analytics state
+  const [analytics, setAnalytics] = useState({
+    totalTasks: 0,
+    completedTasks: 0,
+    overdueTasks: 0,
+  });
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
+  const [analyticsError, setAnalyticsError] = useState('');
+
   useEffect(() => {
-    const fetchBoards = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await getBoards();
-        setBoards(response.data);
+        // Fetch boards and analytics in parallel
+        const [boardsRes, analyticsRes] = await Promise.all([
+          getBoards(),
+          getAnalytics(),
+        ]);
+
+        setBoards(boardsRes.data);
+        setAnalytics(analyticsRes.data);
       } catch (err) {
-        setFetchError('Failed to fetch boards');
+        if (err?.response?.status === 401) {
+          // Token invalid – redirect to login via logout handler
+          handleLogout();
+          return;
+        }
+
+        // Determine which call failed for proper messaging
+        if (err?.config?.url?.includes('/analytics')) {
+          setAnalyticsError('Failed to load analytics');
+        } else {
+          setFetchError('Failed to fetch boards');
+        }
+      } finally {
+        setIsAnalyticsLoading(false);
       }
     };
-    fetchBoards();
+
+    fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreateBoard = async (e) => {
@@ -74,6 +104,47 @@ export default function Dashboard() {
           </button>
         </form>
         <div className="mt-6">
+          {/* Analytics Section */}
+          <h3 className="text-lg font-semibold mb-2">Task Analytics</h3>
+          {isAnalyticsLoading ? (
+            <p className="text-gray-500">Loading analytics…</p>
+          ) : analyticsError ? (
+            <p className="text-red-500 text-sm mb-2">{analyticsError}</p>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {/* Total Tasks */}
+              <div className="bg-white p-4 rounded-lg shadow text-center">
+                <p className="text-lg font-semibold mb-1">Total Tasks</p>
+                <p className="text-2xl font-bold">{analytics.totalTasks}</p>
+              </div>
+
+              {/* Completed Tasks */}
+              <div className="bg-white p-4 rounded-lg shadow text-center">
+                <p className="text-lg font-semibold mb-1">Completed Tasks</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {analytics.completedTasks}
+                </p>
+              </div>
+
+              {/* Overdue Tasks */}
+              <div className="bg-white p-4 rounded-lg shadow text-center">
+                <p className="text-lg font-semibold mb-1">Overdue Tasks</p>
+                <p
+                  className={`text-2xl font-bold ${
+                    analytics.overdueTasks > 0
+                      ? 'text-red-600'
+                      : 'text-gray-700'
+                  }`}
+                >
+                  {analytics.overdueTasks}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Boards Section */}
+        <div className="mt-10">
           <h3 className="text-lg font-semibold mb-2">Your Boards</h3>
           {fetchError && (
             <p className="text-red-500 text-sm mb-2">{fetchError}</p>
