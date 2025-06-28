@@ -38,3 +38,16 @@ Login/Register UI tested: navigation, form submission, error handling.
 - Added task creation form in `List.jsx` for each list, with `submitted` state validation.
 - Integrated with `createTask` API to add tasks to specific lists.
 - Updated `Board.jsx` to pass `boardId` and `setBoard` to `List.jsx`
+
+## Day 12 Frontend Progress (June 27, 2025)
+
+- Added task deletion feature:
+  - Introduced _Delete_ button in `Task.jsx` with a `window.confirm` prompt.
+  - Wired up to new `deleteTask` helper in `src/services/api.js` (DELETE `/boards/:id/tasks/:taskId`).
+  - After deletion the board is refetched with `getBoardById` to maintain state consistency.
+- UI polish:
+  - Disabled buttons while API requests are in-flight (`isDeleting`, `isSubmitting`, `isCreating`).
+  - Added subtle hover/active styles for action links.
+  - Centralised error handling for deletion failures.
+- Refactored `api.js` to prefer `import.meta.env.VITE_API_URL` with localhost fallback (`http://localhost:3000/api`).
+- Confirmed drag-and-drop functionality remains intact after deletion.
