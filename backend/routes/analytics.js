@@ -39,7 +39,16 @@ router.get('/', authMiddleware, async (req, res) => {
           },
           completedTasks: {
             $sum: {
-              $cond: [{ $eq: ['$lists.id', 'done'] }, 1, 0],
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ['$lists.id', 'done'] },
+                    { $gt: ['$lists.tasks', null] },
+                  ],
+                },
+                1,
+                0,
+              ],
             },
           },
           overdueTasks: {
