@@ -301,14 +301,19 @@ router.delete('/:id/tasks/:taskId', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Board not found' });
     }
 
-    // Locate the list containing the task
+    // Locate the list containing the task and the task itself
     const listContainingTask = board.lists.find((l) => l.tasks.id(taskId));
     if (!listContainingTask) {
       return res.status(404).json({ error: 'Task not found' });
     }
 
-    // Remove the task
-    listContainingTask.tasks.id(taskId).remove();
+    const taskDoc = listContainingTask.tasks.id(taskId);
+    if (!taskDoc) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Remove the task subdocument
+    taskDoc.remove();
 
     await board.save();
 
