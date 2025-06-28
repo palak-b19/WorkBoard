@@ -21,7 +21,7 @@ router.get('/', authMiddleware, async (req, res) => {
 
     // Use MongoDB aggregation for efficiency on large data sets
     const [result] = await Board.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.user.userId) } },
+      { $match: { userId: new mongoose.Types.ObjectId(req.user.userId) } },
       { $unwind: '$lists' },
       {
         $unwind: {
