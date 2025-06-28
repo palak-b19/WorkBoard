@@ -61,6 +61,13 @@ export default function Dashboard() {
     try {
       const response = await createBoard(title);
       setBoards([...boards, response.data]);
+      // refresh analytics totals when a new board is added
+      try {
+        const analyticsRes = await getAnalytics();
+        setAnalytics(analyticsRes.data);
+      } catch (err) {
+        setAnalyticsError('Failed to refresh analytics');
+      }
       setTitle('');
       setSubmitted(false);
       setError('');
@@ -113,13 +120,13 @@ export default function Dashboard() {
           ) : (
             <div className="grid gap-4 md:grid-cols-3">
               {/* Total Tasks */}
-              <div className="bg-white p-4 rounded-lg shadow text-center">
+              <div className="bg-white p-4 rounded-lg shadow text-center transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-gray-50">
                 <p className="text-lg font-semibold mb-1">Total Tasks</p>
                 <p className="text-2xl font-bold">{analytics.totalTasks}</p>
               </div>
 
               {/* Completed Tasks */}
-              <div className="bg-white p-4 rounded-lg shadow text-center">
+              <div className="bg-white p-4 rounded-lg shadow text-center transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-gray-50">
                 <p className="text-lg font-semibold mb-1">Completed Tasks</p>
                 <p className="text-2xl font-bold text-green-600">
                   {analytics.completedTasks}
@@ -127,7 +134,7 @@ export default function Dashboard() {
               </div>
 
               {/* Overdue Tasks */}
-              <div className="bg-white p-4 rounded-lg shadow text-center">
+              <div className="bg-white p-4 rounded-lg shadow text-center transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-gray-50">
                 <p className="text-lg font-semibold mb-1">Overdue Tasks</p>
                 <p
                   className={`text-2xl font-bold ${
