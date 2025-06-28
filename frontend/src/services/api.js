@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+// Prefer API URL from environment for production builds; fallback to local dev URL
 const api = axios.create({
-  baseURL: 'https://task-management-platform-746079896238.herokuapp.com/api', // Update to Heroku URL post-merge
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
 });
 
 export const register = (email, password) =>
@@ -37,5 +38,59 @@ export const updateBoard = (id, lists) =>
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     }
   );
+
+export const createTask = (boardId, listId, task) => {
+  console.log('Creating task with data:', { boardId, listId, task });
+  return api
+    .post(
+      `/boards/${boardId}/tasks`,
+      {
+        listId,
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate
+          ? new Date(task.dueDate).toISOString()
+          : undefined,
+      },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }
+    )
+    .then((response) => {
+      console.log('Create task response:', response.data);
+      return response;
+    });
+};
+
+export const updateTask = (
+  boardId,
+  taskId,
+  listId,
+  taskData // { title, description, dueDate }
+) => {
+  console.log('Updating task:', { boardId, taskId, listId, taskData });
+  return api.patch(
+    `/boards/${boardId}/tasks/${taskId}`,
+    {
+      listId,
+      title: taskData.title,
+      description: taskData.description,
+      dueDate: taskData.dueDate
+        ? new Date(taskData.dueDate).toISOString()
+        : undefined,
+    },
+    {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    }
+  );
+};
+
+// Delete a task from a board
+export const deleteTask = (boardId, taskId) => {
+  console.log('Deleting task:', { boardId, taskId });
+  return api.delete(`/boards/${boardId}/tasks/${taskId}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
+};
 
 export default api;
