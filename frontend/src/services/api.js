@@ -1,10 +1,17 @@
 import axios from 'axios';
 
-// Prefer prod URL set via Vite env; otherwise default to Heroku deployment used in production builds
+// Determine sane default base URL:
+// 1. If VITE_API_URL env is provided, use it (allows staging/prod overrides)
+// 2. Otherwise, if app runs on localhost (development), target local backend
+// 3. Fallback to Heroku production URL for preview builds
+
+const defaultBaseURL =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:3000/api'
+    : 'https://task-management-platform-746079896238.herokuapp.com/api';
+
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    'https://task-management-platform-746079896238.herokuapp.com/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultBaseURL,
 });
 
 export const register = (email, password) =>
