@@ -23,28 +23,28 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchInitialData = async () => {
+      // Always attempt to fetch boards so the dashboard shows even if analytics fails
       try {
-        // Fetch boards and analytics in parallel
-        const [boardsRes, analyticsRes] = await Promise.all([
-          getBoards(),
-          getAnalytics(),
-        ]);
-
+        const boardsRes = await getBoards();
         setBoards(boardsRes.data);
-        setAnalytics(analyticsRes.data);
       } catch (err) {
         if (err?.response?.status === 401) {
-          // Token invalid – redirect to login via logout handler
           handleLogout();
           return;
         }
+        setFetchError('Failed to fetch boards');
+      }
 
-        // Determine which call failed for proper messaging
-        if (err?.config?.url?.includes('/analytics')) {
-          setAnalyticsError('Failed to load analytics');
-        } else {
-          setFetchError('Failed to fetch boards');
+      // Fetch analytics separately; failure should not block boards view
+      try {
+        const analyticsRes = await getAnalytics();
+        setAnalytics(analyticsRes.data);
+      } catch (err) {
+        if (err?.response?.status === 401) {
+          handleLogout();
+          return;
         }
+        setAnalyticsError('Failed to load analytics');
       } finally {
         setIsAnalyticsLoading(false);
       }
