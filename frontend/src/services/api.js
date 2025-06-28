@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Prefer API URL from environment for production builds; fallback to local dev URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://task-management-platform-746079896238.herokuapp.com/api',
 });
 
 export const register = (email, password) =>
