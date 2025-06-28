@@ -34,7 +34,7 @@
 
 5. MongoDB Atlas check: task `createdAt` unchanged; \_id preserved; total tasks ≤ 100 per list.
 
-## Day 12 – Task Deletion Integration Test (27 Jun 2025)
+## Day 12 – Task Deletion Integration Test
 
 Environment
 
@@ -52,5 +52,24 @@ Scenarios & Results
 Performance: avg 180 ms for delete with 20 tasks.
 
 Branch feature/tasks merged to **main** and deployed; Heroku logs show successful dyno restart.
+
+## Day 14 – Analytics Integration Test
+
+Environment
+
+- Backend: local dev (feature/analytics) – aggregation pipeline hot-reload
+- Frontend: feature/analytics branch on Vite dev server (localhost:5173) with automatic baseURL switching (`http://localhost:3000/api`).
+- Test user: user6@example.com
+
+Scenarios & Results
+
+1. Load Dashboard → analytics cards show loading spinner then 15 / 4 / 1 (total/completed/overdue) — matches seed data.
+2. Move an existing "todo" task to Done ⇒ `PATCH /boards/:id` then `GET /analytics` — completed count incremented by 1 (bug fixed).
+3. Create a new task, move to Done ⇒ metrics update in <2 s.
+4. Overdue calculation: set `dueDate` to yesterday, leave in In Progress ⇒ overdue count increments.
+5. Invalid token ⇒ 401 handled, frontend redirects to /login.
+6. Backend down ⇒ frontend shows "Failed to load analytics" but boards still render (graceful degradation).
+
+Performance: aggregation pipeline returns in 120–150 ms with 100 tasks across 5 boards.
 
 .

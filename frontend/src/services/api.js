@@ -1,8 +1,17 @@
 import axios from 'axios';
 
-// Prefer API URL from environment for production builds; fallback to local dev URL
+// Determine sane default base URL:
+// 1. If VITE_API_URL env is provided, use it (allows staging/prod overrides)
+// 2. Otherwise, if app runs on localhost (development), target local backend
+// 3. Fallback to Heroku production URL for preview builds
+
+const defaultBaseURL =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:3000/api'
+    : 'https://task-management-platform-746079896238.herokuapp.com/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://task-management-platform-746079896238.herokuapp.com/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultBaseURL,
 });
 
 export const register = (email, password) =>
@@ -89,6 +98,14 @@ export const updateTask = (
 export const deleteTask = (boardId, taskId) => {
   console.log('Deleting task:', { boardId, taskId });
   return api.delete(`/boards/${boardId}/tasks/${taskId}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
+};
+
+// Get aggregated analytics for the authenticated user
+export const getAnalytics = () => {
+  console.log('Fetching analytics');
+  return api.get('/analytics', {
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
   });
 };
