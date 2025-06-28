@@ -3,6 +3,7 @@ const cors = require('cors'); // Add this line
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const boardRoutes = require('./routes/boards');
+const analyticsRoutes = require('./routes/analytics');
 require('dotenv').config();
 
 console.log('Starting server...');
@@ -12,6 +13,7 @@ app.use(cors()); // Add this line
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
+app.use('/api/analytics', analyticsRoutes);
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', mongodb: mongoose.connection.readyState });
 });
