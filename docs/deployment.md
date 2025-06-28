@@ -34,4 +34,23 @@
 
 5. MongoDB Atlas check: task `createdAt` unchanged; \_id preserved; total tasks ≤ 100 per list.
 
+## Day 12 – Task Deletion Integration Test (27 Jun 2025)
+
+Environment
+
+- Backend: Heroku (`task-mvp-backend`) – release v23
+- Frontend: feature/tasks branch on Vite dev server (localhost:5173) with `VITE_API_URL` pointing to Heroku API
+
+Scenarios & Results
+
+1. Delete flow – UI "Delete" → confirm → `DELETE /boards/:id/tasks/:taskId` → **200 OK**, task removed, board refreshed.
+2. Cancel prompt – selecting _Cancel_ leaves task untouched.
+3. Re-delete same task – **404 Task not found** handled gracefully.
+4. Invalid token – **401**, frontend redirects to /login.
+5. Backend down – error toast "Failed to delete task".
+
+Performance: avg 180 ms for delete with 20 tasks.
+
+Branch feature/tasks merged to **main** and deployed; Heroku logs show successful dyno restart.
+
 .

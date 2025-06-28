@@ -62,6 +62,20 @@
   - Response: 201 { board: object } or 400/401/404/500 { "error": string }
   - Notes: Sanitizes title/description for XSS, validates listId (todo, inprogress, done)
 
+- PATCH /api/boards/:id/tasks/:taskId
+
+  - Headers: Authorization: Bearer <token>
+  - Body: { listId: string, title: string, description: string (optional), dueDate: string (optional, YYYY-MM-DD) }
+  - Response: 200 { board: object } or 400/401/404/500 { "error": string }
+  - Notes: Sanitizes title/description for XSS, validates listId (todo, inprogress, done), ensures title is 1-100 chars, description ≤ 500 chars, dueDate is a valid future date. The `createdAt` timestamp on the task is preserved, and the 100-tasks-per-list limit still applies.
+
+- DELETE /api/boards/:id/tasks/:taskId
+
+  - Headers: Authorization: Bearer <token>
+  - Body: (none)
+  - Response: 200 { board: object } or 401/404/500 { "error": string }
+  - Notes: Removes the specified task from whichever list contains it. Validates board/task IDs and user ownership. Task limits (≤100 per list) are preserved automatically after removal.
+
   ## Backend Status
 
 - Authentication complete: Register, Login, Validate endpoints with JWT.
