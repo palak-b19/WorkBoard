@@ -34,10 +34,13 @@ router.get('/', authMiddleware, async (req, res) => {
         if (list.id === 'done') {
           completedTasks += tasks.length;
         } else {
-          // Only non-completed tasks can be overdue
-          overdueTasks += tasks.filter(
-            (task) => task.dueDate && new Date(task.dueDate) < now
-          ).length;
+          // Only non-completed tasks can be overdue. Guard against null items.
+          overdueTasks += tasks.reduce((count, task) => {
+            if (task && task.dueDate && new Date(task.dueDate) < now) {
+              return count + 1;
+            }
+            return count;
+          }, 0);
         }
       });
     });
