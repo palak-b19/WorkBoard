@@ -307,13 +307,28 @@ router.delete('/:id/tasks/:taskId', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
+    // Locate the task sub-document
     const taskDoc = listContainingTask.tasks.id(taskId);
     if (!taskDoc) {
       return res.status(404).json({ error: 'Task not found' });
     }
 
-    // Remove the task subdocument
-    taskDoc.remove();
+    /*
+     * In some Mongoose versions deeply-nested sub-documents (i.e. an array of
+     * sub-documents inside another sub-document) do not inherit the `.remove()`
+     * helper. Attempting to call it can therefore throw
+     * `TypeError: taskDoc.remove is not a function`.
+     *
+     * Instead of calling `taskDoc.remove()` we safely remove the task using the
+     * parent array's `.pull()` helper, which works regardless of sub-document
+     * prototype inheritance.
+     */
+
+    // Remove the task from the list
+    listContainingTask.tasks.pull({ _id: taskId });
+
+    // Ensure Mongoose detects the change to the nested array
+    board.markModified('lists');
 
     await board.save();
 
