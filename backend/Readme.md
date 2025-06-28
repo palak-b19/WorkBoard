@@ -89,4 +89,4 @@
 - Authentication complete: Register, Login, Validate endpoints with JWT.
 - Feature branch `feature/auth-api` merged into `main`.
 - Task management endpoints (create, update, delete) implemented — _User Story #4_ completed on June 27, 2025.
-- Feature branch `feature/tasks` pending merge into `main`
+- Feature branch `feature/tasks` merged into `main`
