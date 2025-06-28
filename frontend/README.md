@@ -14,3 +14,4 @@ Run npm run dev to start Vite server at http://localhost:5173
 - Authentication complete: Login, Register, Logout, protected routes.
 - Kanban Board: Static UI , creation/list , dynamic routing , task drag-and-drop.
   -Task Management: Task creation UI added
+-  Task editing UI added
