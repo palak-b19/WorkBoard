@@ -55,7 +55,38 @@
   - Body: { lists: array }
   - Response: 200 { board: object } or 400/401/404/500 { "error": string }
 
+- POST /api/boards/:id/tasks
+
+  - Headers: Authorization: Bearer <token>
+  - Body: { listId: string, title: string, description: string (optional), dueDate: string (optional, YYYY-MM-DD) }
+  - Response: 201 { board: object } or 400/401/404/500 { "error": string }
+  - Notes: Sanitizes title/description for XSS, validates listId (todo, inprogress, done)
+
+- PATCH /api/boards/:id/tasks/:taskId
+
+  - Headers: Authorization: Bearer <token>
+  - Body: { listId: string, title: string, description: string (optional), dueDate: string (optional, YYYY-MM-DD) }
+  - Response: 200 { board: object } or 400/401/404/500 { "error": string }
+  - Notes: Sanitizes title/description for XSS, validates listId (todo, inprogress, done), ensures title is 1-100 chars, description ≤ 500 chars, dueDate is a valid future date. The `createdAt` timestamp on the task is preserved, and the 100-tasks-per-list limit still applies.
+
+- DELETE /api/boards/:id/tasks/:taskId
+
+  - Headers: Authorization: Bearer <token>
+  - Body: (none)
+  - Response:
+    - 200 { board: object } – Task deleted successfully and updated board returned
+    - 401 { "error": string } – Missing or invalid JWT
+    - 404 { "error": string } – Board or task not found, or IDs are malformed
+    - 500 { "error": string } – Server error
+  - Notes:
+    - Validates both `id` (board) and `taskId` parameters are 24-character Mongo ObjectIds.
+    - Ensures the authenticated user owns the board.
+    - Locates the task in any list (todo/inprogress/done) and removes it.
+    - The 100-tasks-per-list constraint is naturally preserved after deletion.
+
   ## Backend Status
 
 - Authentication complete: Register, Login, Validate endpoints with JWT.
 - Feature branch `feature/auth-api` merged into `main`.
+- Task management endpoints (create, update, delete) implemented — _User Story #4_ completed on June 27, 2025.
+- Feature branch `feature/tasks` pending merge into `main`

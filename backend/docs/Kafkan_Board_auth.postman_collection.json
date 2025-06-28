@@ -532,6 +532,244 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Success : Creating a new task ",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1ODgwMjgsImV4cCI6MTc1MDU5MTYyOH0.mFI7UU5RfWHnZrtJ9mBXo-N1dKPZM0S7k_ecjruswco",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"listId\": \"todo\",\r\n  \"title\": \"Write report\",\r\n  \"description\": \"Draft project report\",\r\n  \"dueDate\": \"2025-06-30\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe", "tasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Success : Creating a new task with minimum fields",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1ODgwMjgsImV4cCI6MTc1MDU5MTYyOH0.mFI7UU5RfWHnZrtJ9mBXo-N1dKPZM0S7k_ecjruswco",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"listId\": \"todo\",\r\n  \"title\": \"Rewrite report\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe", "tasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failure : Creating a new task with wrong Board ID",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1ODgwMjgsImV4cCI6MTc1MDU5MTYyOH0.mFI7UU5RfWHnZrtJ9mBXo-N1dKPZM0S7k_ecjruswco",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"listId\": \"todo\",\r\n  \"title\": \"Rewrite report\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/123/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "123", "tasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failure : Creating a new task with missing task title",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1ODgwMjgsImV4cCI6MTc1MDU5MTYyOH0.mFI7UU5RfWHnZrtJ9mBXo-N1dKPZM0S7k_ecjruswco",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"listId\": \"todo\"\r\n\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe", "tasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Success : HTML Stripped",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2MWQ5Y2Q0Y2RiNzhjNGQwMjNjMDkiLCJpYXQiOjE3NTA1ODgwMjgsImV4cCI6MTc1MDU5MTYyOH0.mFI7UU5RfWHnZrtJ9mBXo-N1dKPZM0S7k_ecjruswco",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"listId\": \"todo\", \"title\": \"<script>alert('xss')</script>\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe", "tasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failure : Creating a new task with no token",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"listId\": \"todo\", \"title\": \"<script>alert('xss')</script>\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe", "tasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Failure : Creating a new task with invalid token",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "12",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"listId\": \"todo\", \"title\": \"<script>alert('xss')</script>\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/boards/685712cc365f3719b1dc0ebe/tasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "boards", "685712cc365f3719b1dc0ebe", "tasks"]
+        }
+      },
+      "response": []
     }
   ]
 }
