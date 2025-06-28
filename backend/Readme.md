@@ -73,10 +73,20 @@
 
   - Headers: Authorization: Bearer <token>
   - Body: (none)
-  - Response: 200 { board: object } or 401/404/500 { "error": string }
-  - Notes: Removes the specified task from whichever list contains it. Validates board/task IDs and user ownership. Task limits (≤100 per list) are preserved automatically after removal.
+  - Response:
+    - 200 { board: object } – Task deleted successfully and updated board returned
+    - 401 { "error": string } – Missing or invalid JWT
+    - 404 { "error": string } – Board or task not found, or IDs are malformed
+    - 500 { "error": string } – Server error
+  - Notes:
+    - Validates both `id` (board) and `taskId` parameters are 24-character Mongo ObjectIds.
+    - Ensures the authenticated user owns the board.
+    - Locates the task in any list (todo/inprogress/done) and removes it.
+    - The 100-tasks-per-list constraint is naturally preserved after deletion.
 
   ## Backend Status
 
 - Authentication complete: Register, Login, Validate endpoints with JWT.
 - Feature branch `feature/auth-api` merged into `main`.
+- Task management endpoints (create, update, delete) implemented — _User Story #4_ completed on June 27, 2025.
+- Feature branch `feature/tasks` pending merge into `main`

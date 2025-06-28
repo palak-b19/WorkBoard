@@ -672,6 +672,118 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Task Deletion Tests",
+      "item": [
+        {
+          "name": "Delete Task - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/boards/{{boardId}}/tasks/{{taskId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "boards", "{{boardId}}", "tasks", "{{taskId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Task - Invalid IDs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/boards/invalidBoardId/tasks/invalidTaskId",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "boards",
+                "invalidBoardId",
+                "tasks",
+                "invalidTaskId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Task - No Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 401\", function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/boards/{{boardId}}/tasks/{{taskId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "boards", "{{boardId}}", "tasks", "{{taskId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
