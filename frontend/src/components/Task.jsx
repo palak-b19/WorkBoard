@@ -1,6 +1,6 @@
 import { useDrag } from 'react-dnd';
 import { useState } from 'react';
-import { updateTask, getBoardById } from '../services/api';
+import { updateTask, getBoardById, deleteTask } from '../services/api';
 
 const Task = ({ task, index, listId, boardId, setBoard }) => {
   const [{ isDragging }, drag] = useDrag(
@@ -26,6 +26,8 @@ const Task = ({ task, index, listId, boardId, setBoard }) => {
   );
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const validate = () => {
     const trimmedTitle = title.trim();
@@ -76,6 +78,29 @@ const Task = ({ task, index, listId, boardId, setBoard }) => {
       setError(err.response?.data?.error || 'Failed to update');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this task?'
+    );
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      await deleteTask(boardId, task._id || task.id);
+
+      // Refresh board state
+      const res = await getBoardById(boardId);
+      setBoard(res.data);
+    } catch (err) {
+      console.error('Delete task error', err);
+      setDeleteError(err.response?.data?.error || 'Failed to delete task');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -137,12 +162,21 @@ const Task = ({ task, index, listId, boardId, setBoard }) => {
     >
       <div className="flex justify-between items-start mb-1">
         <h4 className="font-semibold break-words max-w-[80%]">{task.title}</h4>
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-xs text-blue-500 hover:underline"
-        >
-          Edit
-        </button>
+        <div className="flex gap-1">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-xs text-blue-500 hover:underline"
+          >
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-xs text-red-500 hover:underline"
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </div>
       </div>
       {task.description && (
         <p className="text-gray-600 text-sm mb-1 break-words">
@@ -153,6 +187,9 @@ const Task = ({ task, index, listId, boardId, setBoard }) => {
         <p className="text-gray-500 text-xs">
           Due: {new Date(task.dueDate).toLocaleDateString()}
         </p>
+      )}
+      {deleteError && (
+        <p className="text-red-500 text-xs mb-1">{deleteError}</p>
       )}
     </div>
   );

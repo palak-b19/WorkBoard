@@ -282,4 +282,41 @@ router.patch('/:id/tasks/:taskId', authMiddleware, async (req, res) => {
   }
 });
 
+// Delete an existing task
+router.delete('/:id/tasks/:taskId', authMiddleware, async (req, res) => {
+  try {
+    const { id, taskId } = req.params;
+
+    // Validate IDs
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Invalid board ID format' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(404).json({ error: 'Invalid task ID format' });
+    }
+
+    // Find board and verify ownership
+    const board = await Board.findOne({ _id: id, userId: req.user.userId });
+    if (!board) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+
+    // Locate the list containing the task
+    const listContainingTask = board.lists.find((l) => l.tasks.id(taskId));
+    if (!listContainingTask) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Remove the task
+    listContainingTask.tasks.id(taskId).remove();
+
+    await board.save();
+
+    res.status(200).json(board);
+  } catch (err) {
+    console.error('DELETE task error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+// Prefer API URL from environment for production builds; fallback to local dev URL
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
 });
 
 export const register = (email, password) =>
@@ -82,6 +83,14 @@ export const updateTask = (
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     }
   );
+};
+
+// Delete a task from a board
+export const deleteTask = (boardId, taskId) => {
+  console.log('Deleting task:', { boardId, taskId });
+  return api.delete(`/boards/${boardId}/tasks/${taskId}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
 };
 
 export default api;
