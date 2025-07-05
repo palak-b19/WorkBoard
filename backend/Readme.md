@@ -92,4 +92,6 @@
 - Feature branch `feature/auth-api` merged into `main`.
 - Task management endpoints (create, update, delete) implemented — _User Story #4_ completed on June 27, 2025.
 - Feature branch `feature/tasks` merged into `main`
-- Analytics endpoint (`GET /api/analytics`) fully tested with 100-task dataset — _User Story #5_
+- Analytics endpoint (`GET /api/analytics`) fully tested with 100-task dataset — _User Story #5_ .
+- - Board deletion (`DELETE /api/boards/:id`) and Jest coverage — _User Story #6_
+- - Task endpoints (create/update/delete) Jest coverage + search endpoint (`GET /api/boards/:id/tasks?query`) — _User Story #7_.

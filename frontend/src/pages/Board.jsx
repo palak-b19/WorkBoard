@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import List from '../components/List';
-import { getBoardById, updateBoard } from '../services/api';
+import { getBoardById, updateBoard, searchTasks } from '../services/api';
 
 // Utility helper to check if task matches query
 const taskMatchesQuery = (task, query) => {
@@ -23,6 +23,7 @@ export default function Board() {
   const boardRef = useRef(null);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const searchTimer = useRef(null);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -49,6 +50,37 @@ export default function Board() {
   useEffect(() => {
     fetchBoard();
   }, [id]);
+
+  // Effect: fetch filtered tasks from server when searchQuery changes (debounced)
+  useEffect(() => {
+    // Clear previous timer
+    if (searchTimer.current) {
+      clearTimeout(searchTimer.current);
+    }
+
+    searchTimer.current = setTimeout(async () => {
+      if (!board) return;
+
+      if (!searchQuery.trim()) {
+        // Empty query – revert to full board
+        fetchBoard();
+        return;
+      }
+
+      try {
+        const res = await searchTasks(id, searchQuery.trim());
+        setBoard((prev) => ({ ...prev, lists: res.data }));
+      } catch (err) {
+        console.error('Search tasks error', err);
+        // fall back to client-side filter
+      }
+    }, 300); // 300ms debounce
+
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   const moveTask = useCallback(
     async (item, toListIndex, toTaskIndex) => {

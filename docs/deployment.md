@@ -118,4 +118,29 @@ Coverage
 
 User Story #6 : Board deletion feature implemented and fully tested; buffer/testing phase begun.
 
+Environment
+
+- Backend: local dev (`feature/enhancements`) — new GET /boards/:id/tasks?query endpoint & task endpoint Jest suite
+- Frontend: local dev (`feature/enhancements`) — search bar in Board, additional Jest suites (Task, Board)
+
+Scenarios & Results
+
+1. Search UI – entered "urgent" ⇒ only matching tasks rendered across lists.
+2. Drag-and-drop works while filter active; clearing search resets view.
+3. Server-side search – `GET /boards/:id/tasks?query=urgent` returns tasks where title/description contains term.
+4. Empty query returns full lists; invalid board ID ⇒ 404; wrong user ⇒ 404; invalid JWT ⇒ 401.
+5. Jest suites: Dashboard, Task, Board (frontend) + auth, boards, analytics, tasks (backend) — **all passing (22 tests)**.
+
+Performance
+
+- Client-side filter instant for 100-task board.
+- Server endpoint avg 110 ms (p95 250 ms) with 20-task query.
+
+Coverage
+
+- Frontend tests now cover task deletion flow and search filter visibility.
+- Backend tests cover task create / update / delete plus board & analytics logic.
+
+User Story #7 (optional): Client & server task search implemented and tested; buffer/testing phase continues.
+
 .

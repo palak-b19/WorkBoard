@@ -17,6 +17,8 @@ Run npm run dev to start Vite server at http://localhost:5173
 - Task editing UI added
 - Task deletion and overall UI polish completed (June 27, 2025) — _User Story #4_ (task create/edit/delete) finished.
 - Analytics UI **tested & polished** in `Dashboard.jsx`, displaying live totals/completed/overdue via `getAnalytics` — _User Story #5_ **completed on June 30, 2025**
+- - Board deletion UI with confirmation and Jest coverage — _User Story #6_
+- - Task search bar in `Board.jsx`; Jest suites for Task & Board components — _User Story #7_
 
 ## Next Steps
 

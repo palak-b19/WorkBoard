@@ -66,3 +66,12 @@ Login/Register UI tested: navigation, form submission, error handling.
 Result: Analytics UI production-ready. _User Story #5 finished._
 
 Next: Buffer/Testing phase – performance optimisation & optional features (e.g., board deletion).
+
+- Added search bar to `Board.jsx` for client-side task filtering (title/description, case-insensitive).
+- Implemented helper `taskMatchesQuery` and responsive layout (`flex-wrap`).
+- Added Jest suites:
+  - `Task.test.jsx` verifies delete flow calls API after confirmation.
+  - `Board.test.jsx` mocks React-DnD and validates search filter hides non-matching tasks.
+- All frontend tests pass (7 tests across 3 suites).
+
+Next: Performance polish or additional auth component tests (Day 18).
