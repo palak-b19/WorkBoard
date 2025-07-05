@@ -72,4 +72,26 @@ Scenarios & Results
 
 Performance: aggregation pipeline returns in 120–150 ms with 100 tasks across 5 boards.
 
+
+Environment
+
+- Backend: Heroku (`task-mvp-backend`) – release **v24** (main @ 2025-06-30)
+- Frontend: **main** branch on Vite dev server (localhost:5173) with `VITE_API_URL` pointing to Heroku API, then Heroku backend after merge
+- Test user: user6@example.com
+
+Scenarios & Results
+
+1. Merged `feature/analytics` → `main` with no conflicts; Heroku dyno restarted successfully.
+2. Dashboard loaded analytics cards in <2 s with 80 tasks across 5 boards.
+3. Moving/deleting tasks updated analytics in real-time after `GET /api/analytics` refresh.
+4. Edge cases validated:
+   - No boards/tasks ⇒ { 0 / 0 / 0 }.
+   - No overdue tasks ⇒ overdueTasks = 0.
+   - Invalid JWT ⇒ 401 handled; frontend redirected to /login.
+   - Simulated Heroku downtime ⇒ "Failed to load analytics" toast; boards still render (graceful degradation).
+5. Performance: avg 140 ms (p95 320 ms) response time with 100 tasks; aggregation uses `userId` index.
+6. MongoDB Atlas check: board/task data intact; aggregation pipeline leaves data unchanged.
+
+
+
 .

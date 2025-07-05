@@ -339,4 +339,40 @@ router.delete('/:id/tasks/:taskId', authMiddleware, async (req, res) => {
   }
 });
 
+// Delete a board
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Invalid board ID' });
+    }
+
+    console.log('Attempting delete', id, 'for user', req.user.userId);
+
+    // Attempt to delete the board owned by the authenticated user
+    const result = await Board.deleteOne({ _id: id, userId: req.user.userId });
+    console.log('deletedCount =', result.deletedCount);
+
+    const boardInDb = await Board.findById(id);
+    console.log(
+      'still in DB?',
+      !!boardInDb,
+      'board.userId =',
+      boardInDb?.userId
+    );
+
+    if (result.deletedCount === 0) {
+      // Either board does not exist or does not belong to user
+      return res.status(404).json({ error: 'Board not found' });
+    }
+
+    return res.status(200).json({ message: 'Board deleted' });
+  } catch (err) {
+    console.error('DELETE board error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;
