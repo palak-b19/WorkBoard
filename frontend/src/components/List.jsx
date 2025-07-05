@@ -209,6 +209,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
               listId={list.id}
               boardId={boardId}
               setBoard={setBoard}
+              highlightTerm={searchQuery}
             />
           ))
         )}

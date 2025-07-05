@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import debounce from 'lodash/debounce';
 import { useParams } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -23,7 +24,35 @@ export default function Board() {
   const boardRef = useRef(null);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const searchTimer = useRef(null);
+  const [isSearching, setIsSearching] = useState(false);
+  // Debounced search handler
+  const debouncedSearch = useRef(
+    debounce(async (query) => {
+      if (!board) return;
+      if (!query.trim()) {
+        fetchBoard();
+        setIsSearching(false);
+        return;
+      }
+
+      try {
+        const res = await searchTasks(id, query.trim());
+        setBoard((prev) => ({ ...prev, lists: res.data }));
+      } catch (err) {
+        console.error('Search tasks error', err);
+        // fallback handled by client filtering
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300)
+  ).current;
+
+  // Trigger debounced search when query changes
+  useEffect(() => {
+    setIsSearching(true);
+    debouncedSearch(searchQuery);
+    // cleanup not required: debounced fn handles
+  }, [searchQuery, debouncedSearch]);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -50,37 +79,6 @@ export default function Board() {
   useEffect(() => {
     fetchBoard();
   }, [id]);
-
-  // Effect: fetch filtered tasks from server when searchQuery changes (debounced)
-  useEffect(() => {
-    // Clear previous timer
-    if (searchTimer.current) {
-      clearTimeout(searchTimer.current);
-    }
-
-    searchTimer.current = setTimeout(async () => {
-      if (!board) return;
-
-      if (!searchQuery.trim()) {
-        // Empty query – revert to full board
-        fetchBoard();
-        return;
-      }
-
-      try {
-        const res = await searchTasks(id, searchQuery.trim());
-        setBoard((prev) => ({ ...prev, lists: res.data }));
-      } catch (err) {
-        console.error('Search tasks error', err);
-        // fall back to client-side filter
-      }
-    }, 300); // 300ms debounce
-
-    return () => {
-      if (searchTimer.current) clearTimeout(searchTimer.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
 
   const moveTask = useCallback(
     async (item, toListIndex, toTaskIndex) => {

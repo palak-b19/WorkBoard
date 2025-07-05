@@ -2,7 +2,7 @@ import { useDrag } from 'react-dnd';
 import { useState } from 'react';
 import { updateTask, getBoardById, deleteTask } from '../services/api';
 
-const Task = ({ task, index, listId, boardId, setBoard }) => {
+const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: 'TASK',
@@ -28,6 +28,21 @@ const Task = ({ task, index, listId, boardId, setBoard }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+
+  const renderHighlight = (text) => {
+    if (!highlightTerm) return text;
+    const regex = new RegExp(`(${highlightTerm})`, 'gi');
+    const parts = text.split(regex);
+    return parts.map((part, i) =>
+      regex.test(part) ? (
+        <mark key={i} className="bg-yellow-200">
+          {part}
+        </mark>
+      ) : (
+        part
+      )
+    );
+  };
 
   const validate = () => {
     const trimmedTitle = title.trim();
@@ -161,7 +176,9 @@ const Task = ({ task, index, listId, boardId, setBoard }) => {
       }`}
     >
       <div className="flex justify-between items-start mb-1">
-        <h4 className="font-semibold break-words max-w-[80%]">{task.title}</h4>
+        <h4 className="font-semibold break-words max-w-[80%]">
+          {renderHighlight(task.title)}
+        </h4>
         <div className="flex gap-1">
           <button
             onClick={() => setIsEditing(true)}
@@ -180,7 +197,7 @@ const Task = ({ task, index, listId, boardId, setBoard }) => {
       </div>
       {task.description && (
         <p className="text-gray-600 text-sm mb-1 break-words">
-          {task.description}
+          {renderHighlight(task.description)}
         </p>
       )}
       {task.dueDate && (
