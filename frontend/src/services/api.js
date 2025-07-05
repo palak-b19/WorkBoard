@@ -118,4 +118,12 @@ export const deleteBoard = (id) => {
   });
 };
 
+// Search tasks on a board (optional server-side)
+export const searchTasks = (boardId, query) => {
+  return api.get(`/boards/${boardId}/tasks`, {
+    params: { query },
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
+};
+
 export default api;

@@ -375,4 +375,43 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// Search tasks within a board by title or description (case-insensitive)
+router.get('/:id/tasks', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { query } = req.query; // search term
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Invalid board ID' });
+    }
+
+    // Find board owned by user
+    const board = await Board.findOne({ _id: id, userId: req.user.userId });
+    if (!board) {
+      return res.status(404).json({ error: 'Board not found' });
+    }
+
+    // If no query provided, return full lists
+    if (!query || query.trim() === '') {
+      return res.status(200).json(board.lists);
+    }
+
+    const term = query.toLowerCase();
+    const filteredLists = board.lists.map((list) => {
+      const filteredTasks = list.tasks.filter((task) => {
+        const tTitle = task.title.toLowerCase();
+        const tDesc = task.description ? task.description.toLowerCase() : '';
+        return tTitle.includes(term) || tDesc.includes(term);
+      });
+      return { ...list.toObject(), tasks: filteredTasks };
+    });
+
+    return res.status(200).json(filteredLists);
+  } catch (err) {
+    console.error('GET board tasks search error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;

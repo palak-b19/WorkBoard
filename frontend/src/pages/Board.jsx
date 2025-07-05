@@ -7,11 +7,22 @@ import Footer from '../components/Footer';
 import List from '../components/List';
 import { getBoardById, updateBoard } from '../services/api';
 
+// Utility helper to check if task matches query
+const taskMatchesQuery = (task, query) => {
+  if (!query) return true;
+  const lc = query.toLowerCase();
+  return (
+    task.title.toLowerCase().includes(lc) ||
+    (task.description && task.description.toLowerCase().includes(lc))
+  );
+};
+
 export default function Board() {
   const { id } = useParams();
   const [board, setBoard] = useState(null);
   const boardRef = useRef(null);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -199,17 +210,35 @@ export default function Board() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow p-4">
-        <h2 className="text-2xl font-bold mb-4">{board.title}</h2>
+        <h2 className="text-2xl font-bold mb-2">{board.title}</h2>
+
+        {/* Search bar */}
+        <div className="mb-4 max-w-md">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search tasks..."
+            className="w-full p-2 border rounded-lg border-gray-300 focus:outline-none focus:ring focus:ring-blue-200"
+          />
+        </div>
+
         <DndProvider backend={HTML5Backend}>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap">
             {board.lists.map((list, listIndex) => (
               <List
                 key={list.id}
-                list={list}
+                list={{
+                  ...list,
+                  tasks: list.tasks.filter((task) =>
+                    taskMatchesQuery(task, searchQuery)
+                  ),
+                }}
                 listIndex={listIndex}
                 moveTask={moveTask}
                 boardId={id}
                 setBoard={setBoard}
+                searchQuery={searchQuery}
               />
             ))}
           </div>

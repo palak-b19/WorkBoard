@@ -91,7 +91,6 @@ Scenarios & Results
 5. Performance: avg 140 ms (p95 320 ms) response time with 100 tasks; aggregation uses `userId` index.
 6. MongoDB Atlas check: board/task data intact; aggregation pipeline leaves data unchanged.
 
-
 Environment
 
 - Backend: local dev (`feature/enhancements`) — board-deletion route & Jest tests
