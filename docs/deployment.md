@@ -91,4 +91,32 @@ Scenarios & Results
 5. Performance: avg 140 ms (p95 320 ms) response time with 100 tasks; aggregation uses `userId` index.
 6. MongoDB Atlas check: board/task data intact; aggregation pipeline leaves data unchanged.
 
+
+Environment
+
+- Backend: local dev (`feature/enhancements`) — board-deletion route & Jest tests
+- Frontend: local dev (`feature/enhancements`) — Delete button & Dashboard tests
+- Test user: user6@example.com
+
+Scenarios & Results
+
+1. UI Delete flow — Dashboard → click Delete → confirm ⇒ `DELETE /api/boards/:id` → **200 OK**, board removed from list, analytics refreshed.
+2. Cancel prompt — selecting _Cancel_ keeps board.
+3. Wrong user / foreign board ⇒ **404 Board not found** (verified by Jest test).
+4. Invalid board ID ⇒ **404 Invalid board ID**.
+5. Invalid JWT ⇒ **401 Unauthorized**, frontend redirects to /login.
+6. Backend down ⇒ error toast "Failed to delete board"; analytics & other boards still render (graceful degradation).
+
+Performance
+
+- DELETE endpoint avg 120 ms (p95 250 ms) with 10 boards × 20 tasks.
+- Jest suites: 3 (auth, boards, analytics) — **all passing**; total 14 tests.
+
+Coverage
+
+- New Jest tests confirm board deletion success, ownership guard, invalid ID guard.
+- Analytics tests validate zero counts w/ no boards and correct totals with mixed lists.
+
+User Story #6 : Board deletion feature implemented and fully tested; buffer/testing phase begun.
+
 .
