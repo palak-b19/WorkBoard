@@ -51,3 +51,19 @@ Login/Register UI tested: navigation, form submission, error handling.
   - Centralised error handling for deletion failures.
 - Refactored `api.js` to prefer `import.meta.env.VITE_API_URL` with localhost fallback (`http://localhost:3000/api`).
 - Confirmed drag-and-drop functionality remains intact after deletion.
+
+
+- Thoroughly tested analytics cards in `Dashboard.jsx`:
+  - Verified loading, success, and error states.
+  - Confirmed real-time updates when tasks are created, moved, or deleted.
+  - Tested edge cases (0 tasks, no overdue tasks, invalid token, backend downtime).
+  - Checked responsiveness at 1024 px / 1280 px and single-column mobile layout.
+- UI polish:
+  - Added `hover:-translate-y-1 hover:shadow-lg hover:bg-gray-50` transitions.
+  - Used green text for completed count and red text for overdue > 0.
+  - Ensured typography/spacing consistent with task cards (`text-lg font-semibold`).
+- Cross-browser verification (Chrome v125, Firefox 126) – no React warnings.
+
+Result: Analytics UI production-ready. _User Story #5 finished._
+
+Next: Buffer/Testing phase – performance optimisation & optional features (e.g., board deletion).

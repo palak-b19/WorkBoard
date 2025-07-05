@@ -16,10 +16,9 @@ Run npm run dev to start Vite server at http://localhost:5173
   -Task Management: Task creation UI added
 - Task editing UI added
 - Task deletion and overall UI polish completed (June 27, 2025) — _User Story #4_ (task create/edit/delete) finished.
-- Analytics UI implemented in `Dashboard.jsx`, displaying live totals/completed/overdue via `getAnalytics` call — _User Story #5_
+- Analytics UI **tested & polished** in `Dashboard.jsx`, displaying live totals/completed/overdue via `getAnalytics` — _User Story #5_ **completed on June 30, 2025**
 
 ## Next Steps
 
-1. Comprehensive testing & UI polish for analytics cards (Day 15).
-2. Deploy to Netlify and validate production build.
-3. Merge `feature/analytics` into `main` after review.
+1. Deploy frontend to Netlify and validate production build.
+2. Begin buffer/testing phase (Days 16–20): performance optimisation, board deletion feature, Jest tests.
