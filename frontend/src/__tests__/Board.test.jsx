@@ -1,21 +1,43 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 
 // Mock react-dnd to avoid backend context errors
-jest.mock('react-dnd', () => ({
-  useDrag: () => [{ isDragging: false }, jest.fn()],
-  useDrop: () => [{ isOver: false }, jest.fn()],
-}));
-jest.mock('react-dnd-html5-backend', () => ({}));
+// Replace react-dnd mock with internal scoped callbacks to satisfy jest constraints
+jest.mock('react-dnd', () => {
+  const dropCallbacks = [];
+  const DndProvider = ({ children }) => children;
+  return {
+    useDrag: () => [{ isDragging: false }, jest.fn()],
+    useDrop: (specGenerator) => {
+      const spec = specGenerator();
+      if (spec && typeof spec.drop === 'function') {
+        dropCallbacks.push(spec.drop);
+      }
+      return [{ isOver: false }, jest.fn()];
+    },
+    DndProvider,
+    // expose helper to tests
+    __getDropCallbacks: () => dropCallbacks,
+  };
+});
+
+jest.mock('react-dnd-html5-backend', () => ({ HTML5Backend: {} }));
 
 jest.mock('../services/api', () => ({
   getBoardById: jest.fn(),
   updateBoard: jest.fn(),
 }));
 
-import { getBoardById } from '../services/api';
+import { getBoardById, updateBoard } from '../services/api';
 import Board from '../pages/Board';
+import * as dnd from 'react-dnd';
 
 const sampleBoard = {
   _id: 'board123',
@@ -63,5 +85,38 @@ describe('Board search filter', () => {
     expect(screen.getByText('Urgent task')).toBeInTheDocument();
     expect(screen.getByText('Review PR')).toBeInTheDocument();
     expect(screen.queryByText('Refactor code')).toBeNull();
+  });
+});
+
+describe('Board drag and drop', () => {
+  beforeEach(() => {
+    getBoardById.mockResolvedValue({ data: sampleBoard });
+  });
+
+  it('calls updateBoard after moving a task between lists', async () => {
+    render(
+      <MemoryRouter initialEntries={[`/board/${sampleBoard._id}`]}>
+        <Routes>
+          <Route path="/board/:id" element={<Board />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait until board data is rendered
+    await waitFor(() => screen.getByText('Urgent task'));
+
+    // Retrieve captured drop callbacks from mock
+    const callbacks = dnd.__getDropCallbacks();
+    expect(callbacks.length).toBeGreaterThan(1);
+
+    const item = { id: '1', index: 0, listId: 'todo' };
+
+    await act(async () => {
+      callbacks[1](item, {});
+    });
+
+    await waitFor(() => {
+      expect(updateBoard).toHaveBeenCalled();
+    });
   });
 });

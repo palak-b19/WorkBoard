@@ -87,9 +87,10 @@ export default function Board() {
       const currentBoard = boardRef.current;
       if (!currentBoard) return;
 
-      console.log('Moving task:', item);
+      // Debug logs removed
+      /* console.log('Moving task:', item);
       console.log('Current board state:', currentBoard);
-      console.log('Board lists:', currentBoard.lists);
+      console.log('Board lists:', currentBoard.lists); */
 
       const { id: taskId, listId: fromListId } = item;
 
@@ -97,9 +98,9 @@ export default function Board() {
         (list) => list.id === fromListId
       );
 
-      console.log('From list ID:', fromListId);
+      /* console.log('From list ID:', fromListId);
       console.log('From list index:', fromListIndex);
-      console.log('Task ID being moved:', taskId);
+      console.log('Task ID being moved:', taskId); */
 
       if (fromListIndex === -1) {
         console.error('Source list not found:', fromListId);
@@ -117,14 +118,14 @@ export default function Board() {
       }));
 
       const sourceList = newLists[fromListIndex];
-      console.log('Source list:', sourceList);
+      /* console.log('Source list:', sourceList);
       console.log('Source list tasks:', sourceList.tasks);
-      console.log('Looking for task with ID:', taskId);
+      console.log('Looking for task with ID:', taskId); */
 
       const taskToMove = sourceList.tasks.find((task) => {
         const taskIdStr = task._id?.toString() || task.id?.toString();
         const searchIdStr = taskId?.toString();
-        console.log('Comparing task IDs:', { taskIdStr, searchIdStr });
+        /* console.log('Comparing task IDs:', { taskIdStr, searchIdStr }); */
         return taskIdStr === searchIdStr;
       });
 
@@ -137,7 +138,7 @@ export default function Board() {
         return;
       }
 
-      console.log('Found task to move:', taskToMove);
+      /* console.log('Found task to move:', taskToMove); */
 
       newLists[fromListIndex].tasks = sourceList.tasks.filter((task) => {
         const taskIdStr = task._id?.toString() || task.id?.toString();
@@ -157,7 +158,7 @@ export default function Board() {
 
       newLists[toListIndex].tasks.splice(actualToIndex, 0, taskToInsert);
 
-      console.log('Updated lists:', newLists);
+      /* console.log('Updated lists:', newLists); */
 
       const updatedBoard = {
         ...currentBoard,
@@ -181,13 +182,13 @@ export default function Board() {
             : [],
         }));
 
-        console.log('Sending to backend:', listsForBackend);
+        /* console.log('Sending to backend:', listsForBackend); */
 
         await updateBoard(id, listsForBackend);
-        console.log('Task moved successfully');
+        /* console.log('Task moved successfully'); */
 
         const response = await getBoardById(id);
-        console.log('Fetched fresh board data:', response.data);
+        /* console.log('Fetched fresh board data:', response.data); */
 
         setBoard((prevBoard) => {
           const freshBoard = {
@@ -202,7 +203,7 @@ export default function Board() {
                 : [],
             })),
           };
-          console.log('Setting final board state:', freshBoard);
+          /* console.log('Setting final board state:', freshBoard); */
           return freshBoard;
         });
       } catch (err) {
