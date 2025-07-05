@@ -52,7 +52,6 @@ Login/Register UI tested: navigation, form submission, error handling.
 - Refactored `api.js` to prefer `import.meta.env.VITE_API_URL` with localhost fallback (`http://localhost:3000/api`).
 - Confirmed drag-and-drop functionality remains intact after deletion.
 
-
 - Thoroughly tested analytics cards in `Dashboard.jsx`:
   - Verified loading, success, and error states.
   - Confirmed real-time updates when tasks are created, moved, or deleted.

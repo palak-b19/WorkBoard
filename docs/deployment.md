@@ -72,7 +72,6 @@ Scenarios & Results
 
 Performance: aggregation pipeline returns in 120–150 ms with 100 tasks across 5 boards.
 
-
 Environment
 
 - Backend: Heroku (`task-mvp-backend`) – release **v24** (main @ 2025-06-30)
@@ -91,7 +90,5 @@ Scenarios & Results
    - Simulated Heroku downtime ⇒ "Failed to load analytics" toast; boards still render (graceful degradation).
 5. Performance: avg 140 ms (p95 320 ms) response time with 100 tasks; aggregation uses `userId` index.
 6. MongoDB Atlas check: board/task data intact; aggregation pipeline leaves data unchanged.
-
-
 
 .
