@@ -397,12 +397,15 @@ router.get('/:id/tasks', authMiddleware, async (req, res) => {
       return res.status(200).json(board.lists);
     }
 
-    const term = query.toLowerCase();
+    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const term = escapeRegex(query.toLowerCase());
     const filteredLists = board.lists.map((list) => {
       const filteredTasks = list.tasks.filter((task) => {
-        const tTitle = task.title.toLowerCase();
-        const tDesc = task.description ? task.description.toLowerCase() : '';
-        return tTitle.includes(term) || tDesc.includes(term);
+        const regex = new RegExp(term, 'i');
+        return (
+          regex.test(task.title) ||
+          (task.description && regex.test(task.description))
+        );
       });
       return { ...list.toObject(), tasks: filteredTasks };
     });
