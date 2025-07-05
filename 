@@ -1,0 +1,10 @@
+[33m1a112c2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/enchancements[m[33m, [m[1;31morigin/feature/enchancements[m[33m)[m Merge branch 'feature/enchancements' of https://github.com/palak-b19/Task-Management-Platform into feature/enchancements
+[33m082b27c[m Adding Final Integration test
+[33mc05e588[m Delete backend/.env.test
+[33m9a9666f[m Update .env.test
+[33me52c90d[m Polish Task-search UX
+[33m61982b3[m Backend Formatting
+[33m393a3f2[m Improves Testing and Added Coverage
+[33m9a75ee5[m Fix Backend Formatting
+[33m63f79ab[m Improve Testing
+[33m2f048ec[m AddTask Search Filters
