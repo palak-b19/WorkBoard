@@ -229,3 +229,37 @@ All suites should pass (backend 5 / frontend 7) with green coverage bars.
 - more jest test ensuring coverage
 - improve authentication
 - rate limit errors
+
+## Day 21 – E2E improvements
+
+The buffer/testing phase is complete, started with the dedicated end-to-end testing window .
+
+Environment
+
+- Backend: Heroku (`task-management-platform-746079896238`) – release **v25** (main)
+- Frontend: local Vite dev server on `http://localhost:5173` (main)
+- Cypress: headless Electron 130, Node 22, Cypress 14.5.1
+
+### Cypress Suites
+
+| Spec           | Flow Covered                                               | Result |
+| -------------- | ---------------------------------------------------------- | ------ |
+| `smoke.cy.js`  | Backend `/health` + Login route renders                    |
+| `auth.cy.js`   | Register → Dashboard, Logout, Login, Protected-Route guard |
+| `boards.cy.js` | Create board (UI), Delete board (UI+API verify)            |
+
+Total: **8 tests – all passing** in ~25 s.
+
+### Manual Verification
+
+1. Register + login with new user; duplicate email shows "Email already exists".
+2. Invalid creds → proper 401 toast.
+3. Dashboard shows 3 analytics cards; numbers update after board add/delete
+4. Board CRUD tested with Postman – all endpoints return expected codes (201/200/404/401).
+5. Avg API latency (Heroku) < 300 ms for auth + boards
+
+### CI Integration
+
+A new GitHub Action (`.github/workflows/e2e.yml`) starts the frontend dev server and runs `npm run e2e` on every push / PR to **main** or `feature/*` branches.
+
+.
