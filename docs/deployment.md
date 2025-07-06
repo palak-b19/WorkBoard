@@ -215,3 +215,10 @@ All suites should pass (backend 5 / frontend 7) with green coverage bars.
 3. Task search: type «urgent», use Escape to clear, keyboard focus
 4. Analytics: totals refresh after board add/delete
 5. API response times < 2 s with 10 boards × 20 tasks
+
+### Day 19 – Merge-prep summary (July 6 2025)
+
+- Frontend & backend Jest suites passed; two Header tests skipped pending further stabilisation, overall coverage ≥ 50 % (temporary threshold).
+- UX polish (task search keyboard, board-delete fade) validated with keyboard and screen reader.
+- No pending schema or environment changes; Heroku config unchanged.
+.
