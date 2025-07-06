@@ -171,7 +171,7 @@ const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
   return (
     <div
       ref={drag}
-      className={`bg-white p-4 mb-2 rounded-lg shadow cursor-pointer ${
+      className={`bg-white p-4 mb-2 rounded-lg shadow cursor-pointer transition-opacity duration-300 ${
         isDragging ? 'opacity-50' : ''
       }`}
     >

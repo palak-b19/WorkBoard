@@ -84,4 +84,7 @@ boardSchema.index(
   }
 );
 
+// Index userId for quick board look-ups per user
+boardSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Board', boardSchema);

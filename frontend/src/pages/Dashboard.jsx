@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [boards, setBoards] = useState([]);
   const [fetchError, setFetchError] = useState('');
+  // Track board currently being deleted for fade-out animation
+  const [deletingId, setDeletingId] = useState(null);
 
   // Analytics state
   const [analytics, setAnalytics] = useState({
@@ -86,11 +88,16 @@ export default function Dashboard() {
       'Are you sure you want to delete this board?'
     );
     if (!confirmed) return;
+
+    // trigger fade-out
+    setDeletingId(boardId);
+
     try {
       await deleteBoard(boardId);
       // Refresh boards list
       const boardsRes = await getBoards();
       setBoards(boardsRes.data);
+      setDeletingId(null);
       // Refresh analytics to reflect removed tasks
       try {
         const analyticsRes = await getAnalytics();
@@ -195,7 +202,9 @@ export default function Dashboard() {
               {boards.map((board) => (
                 <li
                   key={board._id}
-                  className="flex items-center justify-between bg-white p-2 rounded-lg shadow"
+                  className={`flex items-center justify-between bg-white p-2 rounded-lg shadow transition-opacity duration-300 ${
+                    deletingId === board._id ? 'opacity-0' : 'opacity-100'
+                  }`}
                 >
                   <Link
                     to={`/board/${board._id}`}
@@ -205,7 +214,8 @@ export default function Dashboard() {
                   </Link>
                   <button
                     onClick={() => handleDeleteBoard(board._id)}
-                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    aria-label="Delete board"
+                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition focus:outline-none focus:ring-2 focus:ring-red-300"
                   >
                     Delete
                   </button>

@@ -32,9 +32,9 @@ router.post('/', authMiddleware, async (req, res) => {
 // Get all boards for authenticated user
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const boards = await Board.find({ userId: req.user.userId }).select(
-      'title createdAt'
-    );
+    const boards = await Board.find({ userId: req.user.userId })
+      .select('title createdAt')
+      .lean();
     res.status(200).json(boards);
   } catch (err) {
     console.error('GET boards error:', err);

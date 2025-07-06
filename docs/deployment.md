@@ -193,3 +193,25 @@ All suites should pass (backend 5 / frontend 7) with green coverage bars.
 4. Backend search returns correct JSON for `/tasks?query=urgent` and honours auth.
 
 \
+
+## Day 19 – Final Unit Tests, UX Polis
+
+### Deliverables
+
+- **Frontend**
+  - Jest tests for `Header.jsx`, `Footer.jsx`, existing `List.jsx` tests validated ( all passed )
+  - Task-search keyboard support (`Enter` & `Escape`), accessible `aria-label`, fade-in on task cards
+  - Board deletion fade-out animation and accessible delete buttons
+- **Backend**
+  - Jest coverage for board endpoints (POST / GET / GET/:id / PATCH)
+  - Added `userId` index and `lean()` optimisation for `GET /api/boards`
+  - README updated with full board-endpoint docs
+- All Jest suites green (backend 6, frontend 8)
+
+### QA Checklist
+
+1. Register / Login / Logout flows
+2. Board lifecycle: create, drag/drop tasks, delete with animation
+3. Task search: type «urgent», use Escape to clear, keyboard focus
+4. Analytics: totals refresh after board add/delete
+5. API response times < 2 s with 10 boards × 20 tasks

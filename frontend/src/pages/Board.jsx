@@ -249,6 +249,17 @@ export default function Board() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                setSearchQuery('');
+                e.target.blur();
+              }
+              if (e.key === 'Enter') {
+                // prevent form submission side-effects
+                e.preventDefault();
+              }
+            }}
+            aria-label="Search tasks by title or description"
             placeholder="Search tasks..."
             className="w-full p-2 pr-10 border rounded-lg border-gray-300 focus:outline-none focus:ring focus:ring-blue-200"
           />
