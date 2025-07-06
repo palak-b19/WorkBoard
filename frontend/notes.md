@@ -84,3 +84,24 @@ Next: Performance polish or additional auth component tests (Day 18).
 - Added Jest tests: `Header.test.jsx` (auth validation, render states, logout flow) — two Logout assertions skipped pending CI stabilisation.
 - Lowered Jest coverage threshold to 50 % temporarily; suites green (9 tests total).
 - Performance: memoised list components via `React.memo`, replaced `useState` derived data with `useMemo`; profiling shows 35 % fewer renders during drag-drop.
+
+## Day 21 – Cypress E2E Kick-off
+
+Added:
+
+- `cypress.config.js` (ESM) with baseUrl + BACKEND_URL env.
+- Support files (`cypress/support/commands.js`, `cypress/support/e2e.js`).
+- Specs:
+  - `smoke.cy.js` – health-check + login route
+  - `auth.cy.js` – register / logout / login / protected-route guard
+  - `boards.cy.js` – create & delete board (API + UI)
+
+All specs pass locally (Electron headless). Run with:
+
+```bash
+cd frontend
+npm run dev &
+npm run e2e
+```
+
+CI: Added `.github/workflows/e2e.yml` (see repo) – runs tests on PRs.
