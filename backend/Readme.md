@@ -130,3 +130,25 @@ Indexes:
 
 - `userId` – speeds up per-user queries
 - Text index on `lists.tasks.title` & `lists.tasks.description` – used by task search endpoint.
+
+### GET /api/boards/:id/tasks?query
+
+Search tasks within a board that match a search term.
+
+**Query Parameters**
+
+| Name    | Type   | Description                                                     |
+| ------- | ------ | --------------------------------------------------------------- |
+| `query` | string | Text to search (case-insensitive); sanitized to avoid ReDoS/XSS |
+
+**Responses**
+
+| Code | Description                                                                                     |
+| ---- | ----------------------------------------------------------------------------------------------- |
+| 200  | Returns an array of matching task objects (`_id`, `title`, `description`, `listId`, `dueDate`). |
+| 400  | Missing/empty `query`.                                                                          |
+| 401  | Missing/invalid JWT.                                                                            |
+| 404  | Board not found or not owned by user.                                                           |
+| 500  | Server error.                                                                                   |
+
+Implementation notes: performs `$regex` on `lists.tasks.title` and `lists.tasks.description` with the provided term, constrained to the specified board and authenticated user. Uses `.lean()` and `userId` index for performance; p95 latency < 250 ms with 20-task query.
