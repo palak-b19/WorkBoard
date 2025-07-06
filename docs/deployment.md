@@ -264,7 +264,7 @@ A new GitHub Action (`.github/workflows/e2e.yml`) starts the frontend dev server
 
 .
 
-## Day 22 – Tasks & Analytics E2E 
+## Day 22 – Tasks & Analytics E2E
 
 Environment
 
@@ -274,10 +274,10 @@ Environment
 
 ### Cypress Results
 
-| Spec              | Tests | 
-| ----------------- | ----- | 
-| `tasks.cy.js`     | 4     | 
-| `analytics.cy.js` | 2     | 
+| Spec              | Tests |
+| ----------------- | ----- |
+| `tasks.cy.js`     | 4     |
+| `analytics.cy.js` | 2     |
 
 ### Key Findings
 
@@ -295,7 +295,5 @@ Environment
 ### CI
 
 - E2E workflow automatically runs new specs – green on initial push.
-
-
 
 .
