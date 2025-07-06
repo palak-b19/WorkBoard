@@ -5,13 +5,15 @@ import axios from 'axios';
 // 2. Otherwise, if app runs on localhost (development), target local backend
 // 3. Fallback to Heroku production URL for preview builds
 
-const defaultBaseURL =
-  typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:3000/api'
-    : 'https://task-management-platform-746079896238.herokuapp.com/api';
+// const defaultBaseURL =
+//   typeof window !== 'undefined' && window.location.hostname === 'localhost'
+//     ? 'http://localhost:3000/api'
+//     : 'https://task-management-platform-746079896238.herokuapp.com/api';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || defaultBaseURL,
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    'https://task-management-platform-746079896238.herokuapp.com/api',
 });
 
 export const register = (email, password) =>
