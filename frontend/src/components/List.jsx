@@ -3,7 +3,14 @@ import { useDrop } from 'react-dnd';
 import Task from './Task';
 import { createTask, getBoardById } from '../services/api';
 
-const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
+const List = ({
+  list,
+  listIndex,
+  moveTask,
+  boardId,
+  setBoard,
+  searchQuery,
+}) => {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [taskDueDate, setTaskDueDate] = useState('');
@@ -77,13 +84,13 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
         dueDate: taskDueDate || undefined,
       });
 
-      console.log('Create task response:', response.data);
+      // console.log('Create task response:', response.data); // debug
 
       // Fetch the latest board state
       try {
         const boardResponse = await getBoardById(boardId);
         const freshBoard = boardResponse.data;
-        console.log('Fetched updated board:', freshBoard);
+        // console.log('Fetched updated board:', freshBoard); // debug
 
         // Find the newly created task in the response
         const updatedList = freshBoard.lists.find((l) => l.id === list.id);
@@ -96,7 +103,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
           return;
         }
 
-        console.log('Found new task in board response:', newTask);
+        // console.log('Found new task in board response:', newTask); // debug
 
         // Update board with fresh data from server
         setBoard((prevBoard) => {
@@ -116,7 +123,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
               };
             }),
           };
-          console.log('Setting board state to:', updatedBoard);
+          // console.log('Setting board state to:', updatedBoard); // debug
           return updatedBoard;
         });
       } catch (err) {
@@ -209,6 +216,7 @@ const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
               listId={list.id}
               boardId={boardId}
               setBoard={setBoard}
+              highlightTerm={searchQuery}
             />
           ))
         )}

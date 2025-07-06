@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors'); // Add this line
+const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const boardRoutes = require('./routes/boards');
@@ -9,7 +9,7 @@ require('dotenv').config();
 console.log('Starting server...');
 
 const app = express();
-app.use(cors()); // Add this line
+app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
@@ -33,5 +33,4 @@ mongoose
   .catch((err) => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

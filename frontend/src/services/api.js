@@ -110,4 +110,20 @@ export const getAnalytics = () => {
   });
 };
 
+// Delete a board for the authenticated user
+export const deleteBoard = (id) => {
+  console.log('Deleting board:', id);
+  return api.delete(`/boards/${id}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
+};
+
+// Search tasks on a board (optional server-side)
+export const searchTasks = (boardId, query) => {
+  return api.get(`/boards/${boardId}/tasks`, {
+    params: { query },
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  });
+};
+
 export default api;

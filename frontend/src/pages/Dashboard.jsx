@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { createBoard, getBoards, getAnalytics } from '../services/api';
+import {
+  createBoard,
+  getBoards,
+  getAnalytics,
+  deleteBoard,
+} from '../services/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -11,6 +16,8 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [boards, setBoards] = useState([]);
   const [fetchError, setFetchError] = useState('');
+  // Track board currently being deleted for fade-out animation
+  const [deletingId, setDeletingId] = useState(null);
 
   // Analytics state
   const [analytics, setAnalytics] = useState({
@@ -73,6 +80,38 @@ export default function Dashboard() {
       setError('');
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create board');
+    }
+  };
+
+  const handleDeleteBoard = async (boardId) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this board?'
+    );
+    if (!confirmed) return;
+
+    // trigger fade-out
+    setDeletingId(boardId);
+
+    try {
+      await deleteBoard(boardId);
+      // Refresh boards list
+      const boardsRes = await getBoards();
+      setBoards(boardsRes.data);
+      setDeletingId(null);
+      // Refresh analytics to reflect removed tasks
+      try {
+        const analyticsRes = await getAnalytics();
+        setAnalytics(analyticsRes.data);
+      } catch (err) {
+        setAnalyticsError('Failed to refresh analytics');
+      }
+      setFetchError('');
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        handleLogout();
+        return;
+      }
+      setFetchError(err.response?.data?.error || 'Failed to delete board');
     }
   };
 
@@ -161,13 +200,25 @@ export default function Dashboard() {
           ) : (
             <ul className="space-y-2">
               {boards.map((board) => (
-                <li key={board._id}>
+                <li
+                  key={board._id}
+                  className={`flex items-center justify-between bg-white p-2 rounded-lg shadow transition-opacity duration-300 ${
+                    deletingId === board._id ? 'opacity-0' : 'opacity-100'
+                  }`}
+                >
                   <Link
                     to={`/board/${board._id}`}
                     className="text-blue-500 hover:underline"
                   >
                     {board.title}
                   </Link>
+                  <button
+                    onClick={() => handleDeleteBoard(board._id)}
+                    aria-label="Delete board"
+                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition focus:outline-none focus:ring-2 focus:ring-red-300"
+                  >
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>

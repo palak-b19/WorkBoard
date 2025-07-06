@@ -72,4 +72,19 @@ const boardSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Enable text search on task titles and descriptions
+boardSchema.index(
+  {
+    'lists.tasks.title': 'text',
+    'lists.tasks.description': 'text',
+  },
+  {
+    name: 'TaskTextIndex',
+    default_language: 'english',
+  }
+);
+
+// Index userId for quick board look-ups per user
+boardSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Board', boardSchema);

@@ -103,4 +103,63 @@
 - Feature branch `feature/auth-api` merged into `main`.
 - Task management endpoints (create, update, delete) implemented — _User Story #4_ completed on June 27, 2025.
 - Feature branch `feature/tasks` merged into `main`
-- Analytics endpoint (`GET /api/analytics`) implemented & optimised — _User Story #5_ in progress (66 % complete).
+- Analytics endpoint (`GET /api/analytics`) fully tested with 100-task dataset — _User Story #5_ .
+- - Board deletion (`DELETE /api/boards/:id`) and Jest coverage — _User Story #6_
+- - Task endpoints (create/update/delete) Jest coverage + search endpoint (`GET /api/boards/:id/tasks?query`) — _User Story #7_.
+
+## Board Endpoints
+
+### POST /api/boards
+
+Create a new board for the authenticated user.
+Request body: `{ "title": "My Board" }`
+Responses:
+
+- 201 Created – returns board object
+- 400 Bad Request – missing title
+- 401 Unauthorized – no/invalid JWT
+
+### GET /api/boards
+
+Returns array of boards owned by the user (title & createdAt only). Query is lean() for performance and uses `userId` index.
+
+### GET /api/boards/:id
+
+Fetch single board with full lists. 404 if not found / wrong user / invalid id.
+
+### PATCH /api/boards/:id
+
+Update board `lists` array (e.g., after drag-and-drop). Accepts `{ lists: [...] }`. Validation ensures array shape.
+
+### DELETE /api/boards/:id
+
+Delete board and all embedded tasks.
+
+All board routes require `Authorization: Bearer <JWT>` header.
+
+Indexes:
+
+- `userId` – speeds up per-user queries
+- Text index on `lists.tasks.title` & `lists.tasks.description` – used by task search endpoint.
+
+### GET /api/boards/:id/tasks?query
+
+Search tasks within a board that match a search term.
+
+**Query Parameters**
+
+| Name    | Type   | Description                                                     |
+| ------- | ------ | --------------------------------------------------------------- |
+| `query` | string | Text to search (case-insensitive); sanitized to avoid ReDoS/XSS |
+
+**Responses**
+
+| Code | Description                                                                                     |
+| ---- | ----------------------------------------------------------------------------------------------- |
+| 200  | Returns an array of matching task objects (`_id`, `title`, `description`, `listId`, `dueDate`). |
+| 400  | Missing/empty `query`.                                                                          |
+| 401  | Missing/invalid JWT.                                                                            |
+| 404  | Board not found or not owned by user.                                                           |
+| 500  | Server error.                                                                                   |
+
+Implementation notes: performs `$regex` on `lists.tasks.title` and `lists.tasks.description` with the provided term, constrained to the specified board and authenticated user. Uses `.lean()` and `userId` index for performance; p95 latency < 250 ms with 20-task query.
