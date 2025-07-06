@@ -13,6 +13,7 @@ jest.mock('../services/api', () => ({
 
 import { register } from '../services/api';
 import Register from '../pages/Register';
+import { MemoryRouter } from 'react-router-dom';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -20,7 +21,11 @@ beforeEach(() => {
 
 describe('Register page', () => {
   it('renders form', () => {
-    render(<Register />);
+    render(
+      <MemoryRouter>
+        <Register />
+      </MemoryRouter>
+    );
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(
@@ -31,7 +36,11 @@ describe('Register page', () => {
   it('successful registration redirects to dashboard', async () => {
     register.mockResolvedValueOnce({ data: { token: 'jwt' } });
 
-    render(<Register />);
+    render(
+      <MemoryRouter>
+        <Register />
+      </MemoryRouter>
+    );
 
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'new@example.com' },
@@ -50,7 +59,11 @@ describe('Register page', () => {
   it('shows error when email duplicate', async () => {
     register.mockRejectedValueOnce({ response: { status: 400 } });
 
-    render(<Register />);
+    render(
+      <MemoryRouter>
+        <Register />
+      </MemoryRouter>
+    );
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'dup@example.com' },
     });

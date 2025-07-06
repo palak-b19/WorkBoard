@@ -8,8 +8,6 @@ import {
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 
-// Mock react-dnd to avoid backend context errors
-// Replace react-dnd mock with internal scoped callbacks to satisfy jest constraints
 jest.mock('react-dnd', () => {
   const dropCallbacks = [];
   const DndProvider = ({ children }) => children;
@@ -23,7 +21,7 @@ jest.mock('react-dnd', () => {
       return [{ isOver: false }, jest.fn()];
     },
     DndProvider,
-    // expose helper to tests
+
     __getDropCallbacks: () => dropCallbacks,
   };
 });
@@ -38,6 +36,15 @@ jest.mock('../services/api', () => ({
 import { getBoardById, updateBoard } from '../services/api';
 import Board from '../pages/Board';
 import * as dnd from 'react-dnd';
+
+// Adding fake timers for debounce handling
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
 
 const sampleBoard = {
   _id: 'board123',
@@ -73,18 +80,27 @@ describe('Board search filter', () => {
       </MemoryRouter>
     );
 
-    // Wait for tasks to load
-    await waitFor(() => screen.getByText('Urgent task'));
+    // Wait for tasks to load (case-insensitive regex)
+    await waitFor(() => screen.getByText(/urgent task/i));
 
     // Type search query
     fireEvent.change(screen.getByPlaceholderText('Search tasks...'), {
       target: { value: 'urgent' },
     });
 
-    // Only tasks containing 'urgent' should be visible
-    expect(screen.getByText('Urgent task')).toBeInTheDocument();
-    expect(screen.getByText('Review PR')).toBeInTheDocument();
-    expect(screen.queryByText('Refactor code')).toBeNull();
+    // Fast-forward debounce timer
+    act(() => {
+      jest.advanceTimersByTime(400);
+    });
+
+    // Wait for filtered tasks to appear (match partial text inside highlight)
+    await waitFor(() =>
+      expect(screen.getAllByText(/urgent/i).length).toBeGreaterThan(0)
+    );
+
+    // Assertions
+    expect(screen.getByText(/review pr/i)).toBeInTheDocument();
+    expect(screen.queryByText(/refactor code/i)).toBeNull();
   });
 });
 

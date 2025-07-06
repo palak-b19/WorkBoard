@@ -3,12 +3,14 @@ import React from 'react';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 jest.mock('../services/api', () => ({
+  __esModule: true,
   default: {
     get: jest.fn(),
   },
 }));
 
 import api from '../services/api';
+import { MemoryRouter } from 'react-router-dom';
 
 const TestChild = () => <div>Protected Content</div>;
 
@@ -23,9 +25,11 @@ describe('ProtectedRoute', () => {
     api.get.mockResolvedValueOnce({ status: 200 });
 
     render(
-      <ProtectedRoute>
-        <TestChild />
-      </ProtectedRoute>
+      <MemoryRouter>
+        <ProtectedRoute>
+          <TestChild />
+        </ProtectedRoute>
+      </MemoryRouter>
     );
 
     expect(await screen.findByText('Protected Content')).toBeInTheDocument();
@@ -35,9 +39,11 @@ describe('ProtectedRoute', () => {
     api.get.mockRejectedValueOnce({});
 
     render(
-      <ProtectedRoute>
-        <TestChild />
-      </ProtectedRoute>
+      <MemoryRouter>
+        <ProtectedRoute>
+          <TestChild />
+        </ProtectedRoute>
+      </MemoryRouter>
     );
 
     await waitFor(() => {

@@ -15,6 +15,7 @@ jest.mock('../services/api', () => ({
 
 import { login } from '../services/api';
 import Login from '../pages/Login';
+import { MemoryRouter } from 'react-router-dom';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -23,7 +24,11 @@ beforeEach(() => {
 
 describe('Login page', () => {
   it('renders form fields', () => {
-    render(<Login />);
+    render(
+      <MemoryRouter>
+        <Login />
+      </MemoryRouter>
+    );
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
@@ -32,7 +37,11 @@ describe('Login page', () => {
   it('successful login stores token and redirects', async () => {
     login.mockResolvedValueOnce({ data: { token: 'fake-jwt' } });
 
-    render(<Login />);
+    render(
+      <MemoryRouter>
+        <Login />
+      </MemoryRouter>
+    );
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'user@example.com' },
     });
@@ -51,7 +60,11 @@ describe('Login page', () => {
   it('shows error on invalid credentials', async () => {
     login.mockRejectedValueOnce({ response: { status: 401 } });
 
-    render(<Login />);
+    render(
+      <MemoryRouter>
+        <Login />
+      </MemoryRouter>
+    );
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'wrong@example.com' },
     });
