@@ -244,15 +244,31 @@ export default function Board() {
         <h2 className="text-2xl font-bold mb-2">{board.title}</h2>
 
         {/* Search bar */}
-        <div className="mb-4 max-w-md">
+        <div className="mb-4 max-w-md relative">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tasks..."
-            className="w-full p-2 border rounded-lg border-gray-300 focus:outline-none focus:ring focus:ring-blue-200"
+            className="w-full p-2 pr-10 border rounded-lg border-gray-300 focus:outline-none focus:ring focus:ring-blue-200"
           />
+
+          {/* Clear button */}
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-gray-200 rounded-full w-6 h-6 flex items-center justify-center focus:outline-none"
+            >
+              ×
+            </button>
+          )}
         </div>
+
+        {/* Searching indicator */}
+        {isSearching && searchQuery.trim() && (
+          <p className="text-sm text-gray-500 mb-2">Searching…</p>
+        )}
 
         <DndProvider backend={HTML5Backend}>
           <div className="flex gap-4 flex-wrap">

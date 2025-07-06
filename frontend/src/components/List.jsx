@@ -3,7 +3,14 @@ import { useDrop } from 'react-dnd';
 import Task from './Task';
 import { createTask, getBoardById } from '../services/api';
 
-const List = ({ list, listIndex, moveTask, boardId, setBoard }) => {
+const List = ({
+  list,
+  listIndex,
+  moveTask,
+  boardId,
+  setBoard,
+  searchQuery,
+}) => {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [taskDueDate, setTaskDueDate] = useState('');
