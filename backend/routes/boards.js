@@ -403,51 +403,19 @@ router.get('/:id/tasks', authMiddleware, async (req, res) => {
       allowedAttributes: {},
     });
 
-    /*
-     * Perform text search using MongoDB aggregation so that the text index
-     * defined on task titles/descriptions can be leveraged for performance.
-     * We unwind the lists and their tasks, run a $text match, then regroup
-     * tasks back into their original lists shape.
-     */
-    const ObjectId = mongoose.Types.ObjectId;
-    const aggregated = await Board.aggregate([
-      {
-        $match: {
-          _id: ObjectId(id),
-          userId: ObjectId(req.user.userId),
-        },
-      },
-      { $unwind: '$lists' },
-      { $unwind: '$lists.tasks' },
-      { $match: { $text: { $search: sanitizedQuery } } },
-      {
-        $group: {
-          _id: '$lists.id',
-          id: { $first: '$lists.id' },
-          title: { $first: '$lists.title' },
-          tasks: { $push: '$lists.tasks' },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          id: 1,
-          title: 1,
-          tasks: 1,
-        },
-      },
-    ]);
+    // Use sanitized regex matching on tasks (sufficient for up to ~100 tasks per list in current app scope)
+    const escaped = sanitizedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escaped, 'i');
 
-    // Re-attach empty lists (if no tasks matched) to maintain original structure
-    const listMap = new Map();
-    aggregated.forEach((l) => listMap.set(l.id, l));
-    const finalLists = board.lists.map((l) =>
-      listMap.has(l.id)
-        ? { ...l.toObject(), tasks: listMap.get(l.id).tasks }
-        : { ...l.toObject(), tasks: [] }
-    );
+    const filteredLists = board.lists.map((list) => {
+      const tasks = list.tasks.filter(
+        (t) =>
+          regex.test(t.title) || (t.description && regex.test(t.description))
+      );
+      return { ...list.toObject(), tasks };
+    });
 
-    return res.status(200).json(finalLists);
+    return res.status(200).json(filteredLists);
   } catch (err) {
     console.error('GET board tasks search error:', err);
     return res.status(500).json({ error: 'Server error' });
