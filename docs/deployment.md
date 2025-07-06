@@ -222,3 +222,10 @@ All suites should pass (backend 5 / frontend 7) with green coverage bars.
 - UX polish (task search keyboard, board-delete fade) validated with keyboard and screen reader.
 - No pending schema or environment changes; Heroku config unchanged.
   .
+
+## Improvements
+
+- write more cypress tests
+- more jest test ensuring coverage
+- improve authentication
+- rate limit errors
