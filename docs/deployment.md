@@ -263,3 +263,39 @@ Total: **8 tests – all passing** in ~25 s.
 A new GitHub Action (`.github/workflows/e2e.yml`) starts the frontend dev server and runs `npm run e2e` on every push / PR to **main** or `feature/*` branches.
 
 .
+
+## Day 22 – Tasks & Analytics E2E 
+
+Environment
+
+- Backend: same Heroku app (v26)
+- Frontend: local Vite dev server
+- Cypress suites added: `tasks.cy.js` (task CRUD + search) and `analytics.cy.js` (dashboard metrics).
+
+### Cypress Results
+
+| Spec              | Tests | 
+| ----------------- | ----- | 
+| `tasks.cy.js`     | 4     | 
+| `analytics.cy.js` | 2     | 
+
+### Key Findings
+
+- Task CRUD working via UI & API; validation errors show as expected.
+- Search bar debounces and highlights, clear button resets.
+- Analytics cards reflect real-time totals, completed and overdue counts.
+- API latency < 350 ms p95 for analytics with 60 tasks.
+
+### Manual QA
+
+- Created 10 tasks across lists; edited, deleted, searched – UI smooth.
+- Verified `/api/analytics` payloads in Postman after each operation.
+- Checked MongoDB Atlas: data consistent, indexes used.
+
+### CI
+
+- E2E workflow automatically runs new specs – green on initial push.
+
+
+
+.

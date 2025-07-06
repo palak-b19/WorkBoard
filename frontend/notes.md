@@ -105,3 +105,10 @@ npm run e2e
 ```
 
 CI: Added `.github/workflows/e2e.yml` (see repo) – runs tests on PRs.
+
+## Day 22 – Task & Analytics E2E
+
+- Added `tasks.cy.js` → covers task create / edit / delete / search flows.
+- Added `analytics.cy.js` → verifies dashboard metrics and live updates.
+- Both suites pass locally & in CI (GitHub Action).
+- Manual QA done – edge-cases validated and documented in docs/deployment.md.
