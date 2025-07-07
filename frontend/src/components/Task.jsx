@@ -119,6 +119,9 @@ const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
     }
   };
 
+  const isOverdue =
+    task.dueDate && new Date(task.dueDate) < new Date() && listId !== 'done';
+
   if (isEditing) {
     return (
       <div className="bg-white p-4 mb-2 rounded-lg shadow">
@@ -173,9 +176,9 @@ const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
   return (
     <div
       ref={drag}
-      className={`bg-white p-4 mb-2 rounded-lg shadow cursor-pointer transition-opacity duration-300 fade-in ${
+      className={`bg-white p-4 mb-2 rounded-lg shadow-md cursor-pointer transition-opacity duration-300 fade-in ${
         isDragging ? 'opacity-50' : ''
-      }`}
+      } ${isOverdue ? 'border border-red-500' : ''}`}
     >
       <div className="flex justify-between items-start mb-1">
         <h4 className="font-semibold break-words max-w-[80%]">
@@ -204,8 +207,16 @@ const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
         </p>
       )}
       {task.dueDate && (
-        <p className="text-gray-500 text-xs">
+        <p className="text-gray-500 text-xs flex items-center gap-1">
           Due: {new Date(task.dueDate).toLocaleDateString()}
+          {isOverdue && (
+            <span
+              className="text-red-600 font-semibold ml-1"
+              aria-label="Overdue task"
+            >
+              • Overdue
+            </span>
+          )}
         </p>
       )}
       {deleteError && (

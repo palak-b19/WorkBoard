@@ -28,3 +28,13 @@ Run npm run dev to start Vite server at http://localhost:5173
 - Jest coverage threshold temporarily lowered to **50 %** until Logout tests are fixed; all other suites pass.
 - Performance: memoised list components and throttled drag-drop updates to reduce re-renders.
 - Docs: README and notes updated for Day 20; preparing branch for merge to `main`.
+
+## Deployment (Netlify)
+
+1. Create a new site in Netlify and point it to this repository / main branch.
+2. In **Site settings → Environment variables** add:
+   - `VITE_API_URL` → `https://task-management-platform-746079896238.herokuapp.com/api`
+3. Build command: `npm run build`
+4. Publish directory: `dist`
+
+The app will call the Heroku backend via the API URL env; no additional CORS config is needed since the backend allows `https://task-mvp.netlify.app` origin.

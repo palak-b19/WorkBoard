@@ -195,30 +195,30 @@ export default function Dashboard() {
           {boards.length === 0 ? (
             <p className="text-gray-500">No boards created yet</p>
           ) : (
-            <ul className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {boards.map((board) => (
-                <li
+                <div
                   key={board._id}
-                  className={`flex items-center justify-between bg-white p-2 rounded-lg shadow transition-opacity duration-300 ${
+                  className={`bg-white p-4 rounded-lg shadow-md transition transform duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
                     deletingId === board._id ? 'opacity-0' : 'opacity-100'
                   }`}
                 >
                   <Link
                     to={`/board/${board._id}`}
-                    className="text-blue-500 hover:underline"
+                    className="block text-blue-600 hover:underline font-medium truncate"
                   >
                     {board.title}
                   </Link>
                   <button
                     onClick={() => handleDeleteBoard(board._id)}
                     aria-label="Delete board"
-                    className="ml-2 btn btn-danger px-2 py-1"
+                    className="mt-3 btn btn-danger w-full text-sm"
                   >
                     Delete
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
         <Link to="/board" className="mt-4 inline-block btn btn-primary">
