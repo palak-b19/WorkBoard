@@ -104,7 +104,6 @@ export const deleteTask = (boardId, taskId) => {
   });
 };
 
-// Get aggregated analytics for the authenticated user
 export const getAnalytics = () => {
   console.log('Fetching analytics');
   return api.get('/analytics', {
@@ -120,7 +119,6 @@ export const deleteBoard = (id) => {
   });
 };
 
-// Search tasks on a board (optional server-side)
 export const searchTasks = (boardId, query) => {
   return api.get(`/boards/${boardId}/tasks`, {
     params: { query },

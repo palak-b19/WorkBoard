@@ -129,6 +129,7 @@ const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
             onChange={(e) => setTitle(e.target.value)}
             className="p-2 border rounded"
             disabled={isSubmitting}
+            data-cy="task-title-input"
           />
           <textarea
             value={description}
@@ -151,6 +152,7 @@ const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
               type="submit"
               className="bg-green-500 text-white px-3 py-1 rounded disabled:opacity-50"
               disabled={isSubmitting}
+              data-cy="save-task"
             >
               {isSubmitting ? 'Saving...' : 'Save'}
             </button>
@@ -183,6 +185,7 @@ const Task = ({ task, index, listId, boardId, setBoard, highlightTerm }) => {
           <button
             onClick={() => setIsEditing(true)}
             className="text-xs text-blue-500 hover:underline"
+            data-cy="edit-task"
           >
             Edit
           </button>

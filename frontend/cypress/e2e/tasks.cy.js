@@ -49,7 +49,7 @@ describe('Task Management', () => {
     cy.contains('.bg-white', 'Test Task').should('exist');
   });
 
-  it.skip('edits a task through the UI', () => {
+  it('edits a task through the UI', () => {
     // create task via API first
     cy.request({
       method: 'POST',
@@ -64,21 +64,20 @@ describe('Task Management', () => {
       cy.contains('.bg-white', 'Original Task', { timeout: 10000 })
         .should('be.visible')
         .within(() => {
-          cy.contains('button', /edit/i).should('be.visible').click();
+          cy.get('[data-cy="edit-task"]').should('be.visible').click();
         });
 
       // Wait for form to appear and edit task
-      cy.get('input[type="text"]')
+      cy.get('[data-cy="task-title-input"]')
         .should('be.visible')
         .should('have.value', 'Original Task')
         .clear()
         .type('Updated Task');
 
-      // Click save and verify
-      cy.get('button[type="submit"]')
-        .contains(/save/i)
-        .should('be.visible')
-        .click();
+      // Click save and verify (wait for API)
+      cy.intercept('PATCH', '**/api/boards/**/tasks/**').as('updateTask');
+      cy.get('[data-cy="save-task"]').should('be.visible').click();
+      cy.wait('@updateTask').its('response.statusCode').should('eq', 200);
 
       // Verify the update
       cy.contains('.bg-white', 'Updated Task', { timeout: 10000 }).should(

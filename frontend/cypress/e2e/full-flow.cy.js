@@ -12,13 +12,13 @@ describe('Full Application Flow', () => {
   const boardOne = `Test Board 1 ${ts}`;
   const boardTwo = `Test Board 2 ${ts}`;
 
-  let token; // <-- persist token across tests
+  let token; // <-- persist token across tests which is used to keep the user logged in
   const apiBase =
     Cypress.env('BACKEND_URL') ||
     'https://task-management-platform-746079896238.herokuapp.com';
   let boardOneId;
 
-  // Preserve authentication between tests by restoring the token
+  // Preserving authentication between tests by restoring the token
   beforeEach(() => {
     if (token) {
       cy.visit('/', {
@@ -37,7 +37,7 @@ describe('Full Application Flow', () => {
     'Task 5',
   ];
 
-  /* 1️⃣  Authentication */
+  /*   Authentication */
   it('registers and logs a user in', () => {
     cy.viewport(1280, 720); // default desktop
 
@@ -56,7 +56,7 @@ describe('Full Application Flow', () => {
     });
   });
 
-  /* 2️⃣  Board creation */
+  /*   Board creation */
   it('creates two boards from the dashboard', () => {
     cy.log('Navigating to dashboard for board creation');
     cy.visit('/dashboard');
@@ -71,7 +71,7 @@ describe('Full Application Flow', () => {
       cy.contains('button', /create board/i).click();
       cy.wait('@createBoard').then((interception) => {
         expect(interception.response.statusCode).to.eq(201);
-        // capture boardOneId for API task creation
+
         if (title === boardOne) {
           boardOneId =
             interception.response.body._id ||
@@ -92,7 +92,7 @@ describe('Full Application Flow', () => {
     createBoard(boardTwo);
   });
 
-  /* 3️⃣  Task management on first board */
+  /*   Task management on first board */
   it('adds, edits, deletes, and searches tasks within a board', () => {
     cy.log('Opening dashboard to access first board');
     cy.visit('/dashboard');
@@ -121,16 +121,31 @@ describe('Full Application Flow', () => {
         });
       });
     });
-
-    // Reload to see tasks in UI
     cy.reload();
-
-    // Verify tasks appear
     taskTitles.forEach((title) => {
       cy.contains('.bg-white', title, { timeout: 10000 }).should('exist');
     });
 
-    // Delete a task
+    cy.log('Editing Task 1');
+    cy.contains('.bg-white', 'Task 1')
+      .first()
+      .within(() => {
+        cy.get('[data-cy="edit-task"]').click();
+      });
+
+    cy.get('[data-cy="task-title-input"]')
+      .should('be.visible')
+      .clear()
+      .type('Task 1 Updated');
+
+    cy.intercept('PATCH', '**/api/boards/**/tasks/**').as('updateTask');
+    cy.get('[data-cy="save-task"]').click();
+    cy.wait('@updateTask').its('response.statusCode').should('eq', 200);
+
+    cy.contains('.bg-white', 'Task 1 Updated', { timeout: 10000 }).should(
+      'exist'
+    );
+
     cy.log('Deleting Task 5');
     cy.contains('.bg-white', 'Task 5')
       .first()
@@ -139,26 +154,21 @@ describe('Full Application Flow', () => {
       });
     cy.contains('.bg-white', 'Task 5', { timeout: 10000 }).should('not.exist');
 
-    // Search functionality
     cy.log('Verifying search works for "urgent"');
     cy.get('@searchBar').type('urgent');
     cy.contains('.bg-white', 'Urgent fix prod').should('exist');
     cy.contains('.bg-white', 'Urgent: send report').should('exist');
     cy.contains('.bg-white', 'Task 1').should('not.exist');
 
-    // Clear search
     cy.contains('button', '×').click();
     cy.contains('.bg-white', 'Task 1').should('exist');
 
-    // Responsiveness check
     cy.viewport(1024, 768);
     cy.get('h2').should('be.visible');
     cy.viewport(1280, 800);
-
-    cy.log('Skipping inline edit – covered in tasks.cy.js');
   });
 
-  /* 4️⃣  Board deletion and analytics */
+  /* 4 Board deletion and analytics */
   it('deletes the second board and validates analytics', () => {
     cy.log('Navigating to dashboard for board deletion');
     cy.visit('/dashboard');
