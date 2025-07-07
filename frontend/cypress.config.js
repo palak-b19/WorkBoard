@@ -6,6 +6,9 @@ export default defineConfig({
   e2e: {
     baseUrl: process.env.E2E_BASE_URL || 'http://localhost:5173',
     supportFile: 'cypress/support/e2e.js',
+    // Skip any specs in a `performance` folder unless explicitly requested
+    //   Run them manually with:  npx cypress run --spec "cypress/e2e/performance/*.cy.js" --config excludeSpecPattern=""
+    excludeSpecPattern: ['**/performance/**'],
     setupNodeEvents(on, config) {
       // Node events if needed later
     },

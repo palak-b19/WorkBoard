@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "jest",
     "e2e": "cypress run",
-    "e2e:open": "cypress open"
+    "e2e:open": "cypress open",
+    "perf": "cypress run --config-file perf.cypress.config.js",
+    "perf:open": "cypress open --config-file perf.cypress.config.js"
   },
   "dependencies": {
     "axios": "^1.10.0",
