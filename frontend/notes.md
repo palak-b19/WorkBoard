@@ -112,3 +112,30 @@ CI: Added `.github/workflows/e2e.yml` (see repo) – runs tests on PRs.
 - Added `analytics.cy.js` → verifies dashboard metrics and live updates.
 - Both suites pass locally & in CI (GitHub Action).
 - Manual QA done – edge-cases validated and documented in docs/deployment.md.
+
+## Day 23 – Manual Full-Flow QA (E2E Phase)
+
+Environment
+
+- Frontend: Vite dev server on `http://localhost:5173` (main branch)
+- Backend: Heroku app `task-management-platform-746079896238` (main @ v26)
+- Browser versions: Chrome v125, Firefox v126
+- Screen sizes verified: 1280 × 800, 1024 × 768
+
+### Steps & Results
+
+1. **Register → Login** – used `fullflow{Date.now()}@example.com` / `Password123!`; redirect to `/dashboard`, JWT stored in `localStorage`.
+2. **Create boards** – "Test Board 1/2"; both appeared in the dashboard list immediately (<300 ms each).
+3. **Open Board 1 & create tasks** – added five tasks (three plain, two with "Urgent" keyword); UI reflected additions instantly.
+4. **Edit task** – changed "Task 1" → "Task 1 Updated"; PATCH responded 200 (≈240 ms), card updated without reload.
+5. **Delete task** – removed "Task 5"; board re-fetched and card disappeared.
+6. **Search** – typed "urgent"; only matching cards shown & highlighted; Clear × reset list.
+7. **Board deletion** – deleted "Test Board 2"; confirm prompt OK; board removed and analytics auto-refreshed.
+8. **Analytics** – `/dashboard` showed updated totals: Total 4, Completed 0, Overdue 0.
+9. **Responsiveness** – layout stable at both viewports; lists wrap correctly on 1024 px.
+10. **Accessibility quick-pass** – verified ARIA labels on search bar (`aria-label="Search tasks by title or description"`) and board/task forms; all actionable elements reachable via Tab key.
+
+### Outcome
+
+- **Cypress**: All specs (`smoke`, `auth`, `boards`, `tasks`, `analytics`, `full-flow`) pass locally and in CI.
+- No visual or functional regressions found.

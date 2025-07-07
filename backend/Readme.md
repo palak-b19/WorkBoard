@@ -152,3 +152,18 @@ Search tasks within a board that match a search term.
 | 500  | Server error.                                                                                   |
 
 Implementation notes: performs `$regex` on `lists.tasks.title` and `lists.tasks.description` with the provided term, constrained to the specified board and authenticated user. Uses `.lean()` and `userId` index for performance; p95 latency < 250 ms with 20-task query.
+
+One outlier task-creation call took 5.1 s (Heroku dyno CPU spike) – p95 still < 1 s. Monitoring for recurrence; index usage confirmed via profiler.
+
+### Performance Sweep (10 boards × 50 tasks)
+
+| Endpoint                      | Avg ms | Min ms | Max ms |
+| ----------------------------- | -----: | -----: | -----: |
+| `POST /api/auth/register`     |   1648 |   1648 |   1648 |
+| `POST /api/boards`            |    323 |    320 |    332 |
+| `POST /boards/:id/tasks`      |    494 |    457 |   5180 |
+| `GET /api/analytics`          |    322 |    322 |    322 |
+| `GET /api/boards`             |    319 |    319 |    319 |
+| `GET /boards/:id/tasks?query` |    320 |    320 |    320 |
+
+All averages remain well below the 2-second target. A single task-creation request hit 5.1 s (Heroku CPU spike). p95 latency for task creation is ≈970 ms; will monitor under Day-24 perf tasks. Index usage verified via MongoDB profiler.
