@@ -10,7 +10,7 @@ router.post('/', authMiddleware, async (req, res) => {
   try {
     const { title } = req.body;
     if (!title) {
-      return res.status(400).json({ error: 'Board title is required' });
+      return res.status(400).json({ error: 'Please provide a board title.' });
     }
     const board = new Board({
       userId: req.user.userId,
@@ -46,20 +46,20 @@ router.get('/', authMiddleware, async (req, res) => {
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
     const board = await Board.findOne({
       _id: req.params.id,
       userId: req.user.userId,
     });
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
     res.status(200).json(board);
   } catch (err) {
     console.error('GET board error:', err);
     if (err.name === 'CastError') {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
     res.status(500).json({ error: 'Server error' });
   }
@@ -70,17 +70,17 @@ router.patch('/:id', authMiddleware, async (req, res) => {
   try {
     const { lists } = req.body;
     if (!lists || !Array.isArray(lists)) {
-      return res.status(400).json({ error: 'Invalid lists data' });
+      return res.status(400).json({ error: 'Invalid list data provided.' });
     }
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
     const board = await Board.findOne({
       _id: req.params.id,
       userId: req.user.userId,
     });
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
     board.lists = lists;
     await board.save();
@@ -88,7 +88,7 @@ router.patch('/:id', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('PATCH board error:', err);
     if (err.name === 'CastError') {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
     res.status(500).json({ error: 'Server error' });
   }
@@ -148,7 +148,7 @@ router.post('/:id/tasks', authMiddleware, async (req, res) => {
     });
 
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
 
     // Find the target list
@@ -247,7 +247,7 @@ router.patch('/:id/tasks/:taskId', authMiddleware, async (req, res) => {
     });
 
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
 
     const list = board.lists.find((l) => l.id === listId);
@@ -298,7 +298,7 @@ router.delete('/:id/tasks/:taskId', authMiddleware, async (req, res) => {
     // Find board and verify ownership
     const board = await Board.findOne({ _id: id, userId: req.user.userId });
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
 
     // Locate the list containing the task and the task itself
@@ -365,7 +365,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     if (result.deletedCount === 0) {
       // Either board does not exist or does not belong to user
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
 
     return res.status(200).json({ message: 'Board deleted' });
@@ -389,7 +389,7 @@ router.get('/:id/tasks', authMiddleware, async (req, res) => {
     // Find board owned by user
     const board = await Board.findOne({ _id: id, userId: req.user.userId });
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: 'Board not found.' });
     }
 
     // If no query provided, return full lists

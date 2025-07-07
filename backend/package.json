@@ -26,7 +26,8 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.2",
-    "sanitize-html": "^2.17.0"
+    "sanitize-html": "^2.17.0",
+    "express-rate-limit": "^6.7.0"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

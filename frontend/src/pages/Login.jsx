@@ -72,7 +72,8 @@ export default function Login() {
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+              aria-label="Login"
+              className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
             >
               Login
             </button>

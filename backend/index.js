@@ -4,12 +4,14 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const boardRoutes = require('./routes/boards');
 const analyticsRoutes = require('./routes/analytics');
+const rateLimit = require('./middleware/rateLimit');
 require('dotenv').config();
 
 console.log('Starting server...');
 
 const app = express();
 app.use(cors());
+app.use(rateLimit);
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);

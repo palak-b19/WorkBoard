@@ -43,12 +43,9 @@ export default function Header() {
         <Link to="/" className="text-xl font-bold">
           Task Management
         </Link>
-        <nav>
+        <nav role="navigation">
           {isAuthenticated ? (
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-            >
+            <button onClick={handleLogout} className="btn btn-danger">
               Logout
             </button>
           ) : (

@@ -356,3 +356,18 @@ All averages satisfy the <2 s SLA.
 The single 5 s task-creation outlier was likely due to a transient Heroku CPU spike;
 
 .
+
+## Day 26 – UI/UX Polish & Accessibility Enhancements
+
+Highlights
+
+- Standardised button styles using new Tailwind utilities `.btn`, `.btn-primary`, `.btn-danger`.
+- Added global focus ring styles; verified keyboard navigation order.
+- Added fade-in animation to task cards (`.fade-in`).
+- Added missing ARIA labels and landmark roles.
+- Implemented IP rate-limiting (100 req / 15 min) via `express-rate-limit` on backend.
+- Friendlier backend error messages across Auth & Boards routes.
+
+All API endpoints remain <2 s latency; rate-limit returns 429 after threshold.
+
+.

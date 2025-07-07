@@ -139,3 +139,21 @@ Environment
 
 - **Cypress**: All specs (`smoke`, `auth`, `boards`, `tasks`, `analytics`, `full-flow`) pass locally and in CI.
 - No visual or functional regressions found.
+
+## Day 26 – Accessibility & Keyboard Navigation QA
+
+- Added focus styles (`focus:ring-2 focus:ring-offset-2`) to all primary & danger buttons via reusable `.btn` utilities.
+- Clear-search button now has `aria-label="Clear search input"` and focus ring.
+- Header navigation marked `role="navigation"`; Footer marked `role="contentinfo"`.
+- Verified keyboard flow:
+  1. `Tab` cycles through header -> main actions -> footer in logical order.
+  2. `Enter` activates buttons and form submissions.
+  3. `Esc` clears search input in Board page.
+- NVDA (2024.2) screen-reader pass:
+  • Login / Register forms announce labels and error text correctly.
+  • Dashboard analytics cards announced as group; counts read out.
+  • Board page lists announced as list items; tasks read title then description.
+  • Delete actions announce "button Delete board" / "button Delete".
+- No unlabeled interactive elements detected.
+
+Outcome: Meets WCAG 2.1 AA keyboard and screen-reader navigation requirements.

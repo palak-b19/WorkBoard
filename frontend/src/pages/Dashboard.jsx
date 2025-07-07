@@ -142,10 +142,7 @@ export default function Dashboard() {
             )}
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-          >
+          <button type="submit" className="btn btn-primary">
             Create Board
           </button>
         </form>
@@ -215,7 +212,7 @@ export default function Dashboard() {
                   <button
                     onClick={() => handleDeleteBoard(board._id)}
                     aria-label="Delete board"
-                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition focus:outline-none focus:ring-2 focus:ring-red-300"
+                    className="ml-2 btn btn-danger px-2 py-1"
                   >
                     Delete
                   </button>
@@ -224,16 +221,10 @@ export default function Dashboard() {
             </ul>
           )}
         </div>
-        <Link
-          to="/board"
-          className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-        >
+        <Link to="/board" className="mt-4 inline-block btn btn-primary">
           View Kanban Board
         </Link>
-        <button
-          onClick={handleLogout}
-          className="mt-4 ml-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-        >
+        <button onClick={handleLogout} className="mt-4 ml-4 btn btn-danger">
           Logout
         </button>
       </main>
