@@ -10,7 +10,12 @@ require('dotenv').config();
 console.log('Starting server...');
 
 const app = express();
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://task-mvp-backend.herokuapp.com',
+  'https://task-mvp.netlify.app',
+];
+app.use(cors({ origin: allowedOrigins }));
 app.use(rateLimit);
 app.use(express.json());
 app.use('/api/auth', authRoutes);

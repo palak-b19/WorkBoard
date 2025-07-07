@@ -178,3 +178,9 @@ One outlier task-creation call took 5.1 s (Heroku dyno CPU spike) – p95 still 
 | `GET /boards/:id/tasks?query` |    320 |    320 |    320 |
 
 All averages remain well below the 2-second target. A single task-creation request hit 5.1 s (Heroku CPU spike). p95 latency for task creation is ≈970 ms; will monitor under Day-24 perf tasks. Index usage verified via MongoDB profiler.
+
+## Day 27 – Deployment Prep
+
+- Added Netlify origin (`https://task-mvp.netlify.app`) to CORS whitelist in `index.js`.
+- Verified all endpoints return user-friendly errors and standard JSON shape `{ error: "…" }`.
+- Postman latency test (10×50 dataset) still < 2 s p95.
